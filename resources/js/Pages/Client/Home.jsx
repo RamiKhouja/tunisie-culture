@@ -143,6 +143,7 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
         .filter(option => option.count > 0 || option.category.id === categoryFilter),
     [storedCategories, filteredItems, selectedState, matchesCategory, categoryFilter]);
     const categoryItems = useMemo(() => filteredItems.filter(item => categoryFilter === null || matchesCategory(item, categoryFilter)), [filteredItems, categoryFilter, matchesCategory]);
+    const mapItems = useMemo(() => categoryItems.filter(item => item.kind !== 'cultural'), [categoryItems]);
     const discoveryItems = useMemo(() => categoryItems.filter(item => !selectedState || item.state === selectedState), [categoryItems, selectedState]);
     const discoveryContent = <DiscoveryContent mode={contentFilter} items={discoveryItems} today={today} onSelectEvent={setSelectedItem} onSelectCulturalItem={setSelectedItem} />;
     const mapGroups = useMemo(() => groupCategories(storedCategories, filteredItems.filter(item => !selectedState || item.state === selectedState), governoratePositions)
@@ -173,7 +174,7 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
                 </aside>
                 <section className="cultural-map relative h-[calc(100dvh-6.5rem)] min-h-[32rem] min-w-0 drop-shadow-[0_8px_12px_rgba(73,53,31,0.18)]" aria-label={t('mapLabel')}>
                     <div className="map-paper-edge relative h-full overflow-hidden bg-[#d9e5df]">
-                        <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={categoryItems} onSelectItem={setSelectedItem} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
+                        <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={mapItems} onSelectItem={setSelectedItem} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
                         <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_8px_8px_rgba(139,85,42,0.28),inset_0_0_28px_rgba(139,85,42,0.2)]" />
                     </div>
                     {/* <img src="/images/top-righ-leaf.png" alt="" aria-hidden="true" draggable={false} className="pointer-events-none absolute -right-2 -top-2 z-10 h-auto w-36 max-w-[35%] select-none sm:-right-4 sm:-top-6 sm:w-44" />
