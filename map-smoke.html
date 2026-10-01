@@ -1,0 +1,7 @@
+<html><body><div id="root" style="height:700px"></div><script type="module">
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import TunisiaMap from '/resources/js/Components/TunisiaMap.jsx';
+createRoot(document.getElementById('root')).render(React.createElement(TunisiaMap,{items:[{id:1,name:{en:'Smoke test Carthage'},longitude:10.3233,latitude:36.8528}]}));
+setTimeout(()=>{document.body.dataset.result=document.querySelector('[aria-label="View Smoke test Carthage"]')?'PASS: worker loaded and marker rendered':'FAIL';},5000);
+</script></body></html>
