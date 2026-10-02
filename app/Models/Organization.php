@@ -11,7 +11,7 @@ class Organization extends Model
 {
     protected $fillable = ['name', 'logo', 'mf', 'description', 'facebook', 'instagram', 'tiktok', 'linkedin', 'youtube', 'website', 'email', 'phone', 'show_phone', 'show_email', 'state_id', 'city', 'address', 'zip_code', 'is_active'];
 
-    protected $casts = ['name' => 'array', 'show_phone' => 'boolean', 'show_email' => 'boolean', 'is_active' => 'boolean'];
+    protected $casts = ['name' => 'array', 'description' => 'array', 'show_phone' => 'boolean', 'show_email' => 'boolean', 'is_active' => 'boolean'];
 
     public function state(): BelongsTo
     {

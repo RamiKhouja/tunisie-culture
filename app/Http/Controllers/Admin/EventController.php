@@ -20,11 +20,24 @@ class EventController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Event::with('organization:id,name', 'eventDates')->latest();
+        $query = Event::with('organization:id,name', 'categories:id,name', 'eventDates')->latest();
         if ($request->user()->role === 'organizer') {
             $query->whereHas('organization.users', fn ($q) => $q->whereKey($request->user()->id));
         }
-        return Inertia::render('Admin/Events/Index', ['items' => $query->paginate(20)]);
+
+        $today = now('Africa/Tunis')->toDateString();
+        match ($request->input('status')) {
+            'upcoming' => $query->whereHas('eventDates', fn ($q) => $q->whereDate('date', '>=', $today)),
+            'past' => $query->whereDoesntHave('eventDates', fn ($q) => $q->whereDate('date', '>=', $today)),
+            default => null,
+        };
+
+        $items = $query->paginate(20)->withQueryString();
+        $items->getCollection()->each(function (Event $event) {
+            $event->setAttribute('status', $event->isCurrentOrUpcoming() ? 'upcoming' : 'past');
+        });
+
+        return Inertia::render('Admin/Events/Index', ['items' => $items, 'status' => $request->input('status', 'all')]);
     }
 
     public function create(Request $request)
@@ -66,7 +79,8 @@ class EventController extends Controller
             'category_ids' => 'required|array|min:1', 'category_ids.*' => 'required|integer|distinct|exists:categories,id', 'tags' => 'present|array', 'tags.*' => 'required|string|max:100',
             'event_dates' => 'required|array|min:1', 'event_dates.*.date' => 'required|date_format:Y-m-d', 'event_dates.*.start_at' => 'required|date_format:H:i', 'event_dates.*.end_at' => 'required|date_format:H:i',
             'is_free' => 'required|boolean', 'price' => [Rule::requiredIf(! $request->boolean('is_free')), 'nullable', 'numeric', 'min:0', 'max:9999999999.99'], 'payment_link' => 'nullable|url:http,https|max:2048',
-            'short_description' => 'required|string|max:10000', 'description' => 'required|string|max:100000', 'google_maps_url' => 'nullable|url|max:2048', 'latitude' => 'required_without:google_maps_url|nullable|numeric|between:-90,90', 'longitude' => 'required_without:google_maps_url|nullable|numeric|between:-180,180',
+            'short_description' => 'required', 'short_description.*' => 'nullable|string|max:10000',
+            'description' => 'required', 'description.*' => 'nullable|string|max:100000', 'google_maps_url' => 'nullable|url|max:2048', 'latitude' => 'required_without:google_maps_url|nullable|numeric|between:-90,90', 'longitude' => 'required_without:google_maps_url|nullable|numeric|between:-180,180',
             'state_id' => 'required|exists:locations,id', 'city' => 'required|string|max:255', 'place_name' => 'required|string|max:255',
             'pictures' => 'nullable|array', 'pictures.*' => 'image|max:10240',
             'existing_pictures' => 'present|array', 'existing_pictures.*' => ['string', Rule::in($event->pictures ?? [])],
@@ -85,7 +99,8 @@ class EventController extends Controller
             $data = [...$data, ...$coordinates];
         }
         foreach (['description', 'short_description'] as $field) {
-            $data[$field] = RichText::clean($data[$field]);
+            $value = is_array($data[$field]) ? $data[$field] : ['en' => $data[$field]];
+            $data[$field] = collect($value)->map(fn ($content) => RichText::clean($content))->all();
         }
         $data['price'] = $request->boolean('is_free') ? 0 : $data['price'];
         $data['main_image'] = $request->hasFile('main_image') ? $request->file('main_image')->store('events/main', 'public') : $event->main_image;

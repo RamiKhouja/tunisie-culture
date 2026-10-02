@@ -55,7 +55,7 @@ class OrganizationController extends Controller
         $request->merge(['users' => $request->input('users', [])]);
         $rules = [
             'name' => 'required|array:en,fr,ar', 'name.en' => 'required_without_all:name.fr,name.ar|nullable|string|max:255', 'name.fr' => 'nullable|string|max:255', 'name.ar' => 'nullable|string|max:255',
-            'logo' => 'nullable|image|max:5120', 'mf' => 'nullable|string|max:255', 'description' => 'required|string|max:100000',
+            'logo' => 'nullable|image|max:5120', 'mf' => 'nullable|string|max:255', 'description' => 'required', 'description.*' => 'nullable|string|max:100000',
             'email' => 'nullable|email|max:255', 'phone' => 'required|string|max:50', 'show_phone' => 'required|boolean', 'show_email' => 'required|boolean', 'is_active' => 'required|boolean',
             'state_id' => 'required|exists:locations,id', 'city' => 'required|string|max:255', 'address' => 'required|string|max:255', 'zip_code' => 'nullable|string|max:30',
             'users' => 'present|array', 'users.*.user_id' => 'required|integer|distinct|exists:users,id', 'users.*.role' => 'required|string|max:100', 'users.*.show_user' => 'required|boolean',
@@ -64,7 +64,8 @@ class OrganizationController extends Controller
             $rules[$field] = 'nullable|url:http,https|max:2048';
         }
         $data = $request->validate($rules);
-        $data['description'] = RichText::clean($data['description']);
+        $description = is_array($data['description']) ? $data['description'] : ['en' => $data['description']];
+        $data['description'] = collect($description)->map(fn ($value) => RichText::clean($value))->all();
         $data['logo'] = $request->hasFile('logo') ? $request->file('logo')->store('organizations', 'public') : $organization->logo;
         DB::transaction(function () use ($data, $organization, $isAdmin) {
             $organization->fill(Arr::except($data, ['users']))->save();

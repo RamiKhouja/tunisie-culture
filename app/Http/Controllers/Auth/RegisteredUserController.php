@@ -100,7 +100,7 @@ class RegisteredUserController extends Controller
                 'name' => $data['organization_name'],
                 'logo' => $data['organization_logo'],
                 'mf' => $data['organization_mf'] ?: null,
-                'description' => RichText::clean($data['organization_description']),
+                'description' => ['en' => RichText::clean($data['organization_description'])],
                 'email' => $data['organization_email'] ?? null,
                 'phone' => $data['organization_phone'],
                 'show_phone' => $data['organization_show_phone'],

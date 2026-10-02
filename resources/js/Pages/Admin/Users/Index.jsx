@@ -1,12 +1,10 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router } from '@inertiajs/react';
-
-const roles = [
-    { value: 'organizer', label: 'Organization members' },
-    { value: 'admin', label: 'Administrators' },
-];
+import { useLanguage } from '@/i18n';
 
 export default function Index({ users, selectedRole }) {
+    const { t, locale, dir } = useLanguage();
+    const roles = [{ value: 'organizer', label: t('organizationMembers') }, { value: 'admin', label: t('administrators') }];
     const filter = (role) => {
         router.get(
             route('admin.users.index'),
@@ -24,7 +22,7 @@ export default function Index({ users, selectedRole }) {
     };
 
     const deleteUser = (user) => {
-        if (confirm('Delete this user?')) {
+        if (confirm(t('deleteUserConfirm'))) {
             router.delete(route('admin.users.destroy', user.id));
         }
     };
@@ -35,22 +33,22 @@ export default function Index({ users, selectedRole }) {
                 <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
                     <div>
                         <h1 className="font-serif text-3xl font-bold">
-                            Manage users
+                            {t('manageUsers')}
                         </h1>
                         <p className="mt-1 text-sm text-[#44301D]/65">
-                            Manage administrator and organization member access.
+                            {t('manageUsersHelp')}
                         </p>
                     </div>
                     <Link
                         href={route('admin.users.create')}
                         className="rounded-xl bg-[#49351F] px-5 py-3 text-center text-sm font-semibold text-white"
                     >
-                        Add user
+                        {t('addUser')}
                     </Link>
                 </div>
             }
         >
-            <Head title="Manage users" />
+            <Head title={t('manageUsers')} />
 
             <div
                 className="mb-5 flex w-fit mx-auto flex-wrap gap-2 rounded-xl border border-[#9B7847]/30 bg-[#EED9AE]/25 p-2"
@@ -73,14 +71,14 @@ export default function Index({ users, selectedRole }) {
             </div>
 
             <div className="overflow-x-auto rounded-xl border border-[#9B7847]/30">
-                <table className="w-full text-left text-sm">
+                <table dir={dir} className="w-full text-start text-sm">
                     <thead className="bg-stone-100">
                         <tr>
-                            <th className="p-4">User</th>
-                            <th>Organization</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th className="p-4 text-right">Actions</th>
+                            <th className={`p-4 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>{t('user')}</th>
+                            <th className={dir === 'rtl' ? 'text-right' : 'text-left'}>{t('organization')}</th>
+                            <th className={dir === 'rtl' ? 'text-right' : 'text-left'}>{t('email')}</th>
+                            <th className={dir === 'rtl' ? 'text-right' : 'text-left'}>{t('status')}</th>
+                            <th className="p-4 text-end">{t('actions')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -93,8 +91,8 @@ export default function Index({ users, selectedRole }) {
                                     <div className="font-semibold">{user.name}</div>
                                     <div className="text-xs text-[#44301D]/55">
                                         {user.role === 'admin'
-                                            ? 'Administrator'
-                                            : 'Organization member'}
+                                            ? t('administrator')
+                                            : t('organizationMembers')}
                                     </div>
                                 </td>
                                 <td>
@@ -123,28 +121,30 @@ export default function Index({ users, selectedRole }) {
                                                 : 'bg-red-50 text-red-700'
                                         }`}
                                     >
-                                        {user.is_active ? 'Active' : 'Disabled'}
+                                        {user.is_active ? t('active') : t('disabled')}
                                     </span>
                                 </td>
-                                <td className="space-x-3 p-4 text-right">
+                                <td className="p-4 text-end">
+                                    <div className="flex items-center justify-end gap-4">
                                     <Link
                                         className="font-semibold"
                                         href={route('admin.users.edit', user.id)}
                                     >
-                                        Edit
+                                        {t('edit')}
                                     </Link>
                                     <button
                                         className="text-[#747A3C]"
                                         onClick={() => toggleStatus(user)}
                                     >
-                                        {user.is_active ? 'Disable' : 'Activate'}
+                                        {user.is_active ? t('disable') : t('activate')}
                                     </button>
                                     <button
                                         className="text-red-700"
                                         onClick={() => deleteUser(user)}
                                     >
-                                        Delete
+                                        {t('delete')}
                                     </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
@@ -153,7 +153,7 @@ export default function Index({ users, selectedRole }) {
 
                 {users.data.length === 0 && (
                     <p className="p-8 text-center">
-                        No users in this group yet.
+                    {t('noUsers')}
                     </p>
                 )}
             </div>

@@ -1,6 +1,7 @@
 import Dropdown from '@/Components/Dropdown';
 import { Link, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import { useLanguage } from '@/i18n';
 
 const Icon = ({ name, className = 'h-5 w-5' }) => {
     const paths = {
@@ -21,21 +22,22 @@ const Icon = ({ name, className = 'h-5 w-5' }) => {
 };
 
 const navigation = [
-    { label: 'Overview', icon: 'dashboard', href: 'dashboard' },
-    { label: 'Cultural Items', icon: 'collection', href: 'admin.cultural-items.index' },
-    { label: 'Organizations', icon: 'users', href: 'admin.organizations.index' },
-    { label: 'Users', icon: 'users', href: 'admin.users.index' },
-    { label: 'Events', icon: 'collection', href: 'admin.events.index' },
-    { label: 'States & Cities', icon: 'map', href: 'admin.locations.index' },
-    { label: 'Categories', icon: 'tags', href: 'admin.categories.index' },
-    { label: 'Types', icon: 'tags', href: 'admin.types.index' },
-    { label: 'Artists & People', icon: 'users', href: 'admin.artists.index' },
-    { label: 'Reports', icon: 'report' },
+    { key: 'overview', icon: 'dashboard', href: 'dashboard' },
+    { key: 'culturalItems', icon: 'collection', href: 'admin.cultural-items.index' },
+    { key: 'organizations', icon: 'users', href: 'admin.organizations.index' },
+    { key: 'users', icon: 'users', href: 'admin.users.index' },
+    { key: 'events', icon: 'collection', href: 'admin.events.index' },
+    { key: 'statesCities', icon: 'map', href: 'admin.locations.index' },
+    { key: 'categories', icon: 'tags', href: 'admin.categories.index' },
+    { key: 'types', icon: 'tags', href: 'admin.types.index' },
+    { key: 'artistsPeople', icon: 'users', href: 'admin.artists.index' },
+    { key: 'reports', icon: 'report' },
 ];
 
 export default function AdminLayout({ header, children }) {
     const { auth, flash } = usePage().props;
     const { user } = auth;
+    const { languages, locale, setLocale, t, dir } = useLanguage();
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
 
@@ -49,20 +51,20 @@ export default function AdminLayout({ header, children }) {
             <div className={`flex h-20 items-center border-b border-[#9B7847]/30 ${collapsed ? 'justify-center px-3' : 'px-6'}`}>
                 <Link href="/" className="flex items-center gap-3" aria-label="Athar home">
                     <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[#9B7847]/60 bg-[#D5B66F]/35 text-lg font-bold text-[#44301D]">أ</span>
-                    {!collapsed && <div><div className="font-serif text-xl font-bold tracking-wide">ATHAR</div><div className="text-[10px] uppercase tracking-[.24em] text-[#747A3C]">Heritage archive</div></div>}
+                    {!collapsed && <div><div className="font-serif text-xl font-bold tracking-wide">ATHAR</div><div className="text-[10px] uppercase tracking-[.24em] text-[#747A3C]">{t('heritageArchive')}</div></div>}
                 </Link>
             </div>
 
             <nav className="flex-1 space-y-1.5 overflow-y-auto px-3 py-6" aria-label="Admin navigation">
-                {!collapsed && <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[.2em] text-[#44301D]/50">Workspace</p>}
-                {navigation.filter(item => user.role === 'admin' || ['Overview', 'Organizations', 'Events', 'Categories'].includes(item.label)).map((item) => {
+                {!collapsed && <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[.2em] text-[#44301D]/50">{t('workspace')}</p>}
+                {navigation.filter(item => user.role === 'admin' || ['overview', 'organizations', 'events', 'categories'].includes(item.key)).map((item) => {
                     const active = item.href && route().current(item.href);
                     return (
-                        <Link key={item.label} href={item.href === 'admin.organizations.index' && user.role === 'organizer' ? route('admin.organizations.edit', auth.organization_id) : item.href ? route(item.href) : '#'} title={collapsed ? item.label : undefined}
+                        <Link key={item.key} href={item.href === 'admin.organizations.index' && user.role === 'organizer' ? route('admin.organizations.edit', auth.organization_id) : item.href ? route(item.href) : '#'} title={collapsed ? t(item.key) : undefined}
                             className={`group flex items-center rounded-xl py-3 text-sm font-medium transition ${collapsed ? 'justify-center px-2' : 'gap-3 px-3'} ${active ? 'bg-[#D5B66F] text-[#44301D] shadow-sm' : 'text-[#44301D]/75 hover:bg-white/45 hover:text-[#44301D]'}`}>
                             <Icon name={item.icon} className="h-[19px] w-[19px] shrink-0" />
-                            {!collapsed && <span>{item.label}</span>}
-                            {!collapsed && !active && <Icon name="chevron" className="ml-auto h-3.5 w-3.5 opacity-0 transition group-hover:opacity-60" />}
+                            {!collapsed && <span>{t(item.key)}</span>}
+                            {!collapsed && !active && <Icon name="chevron" className={`${dir === 'rtl' ? 'mr-auto rotate-180' : 'ml-auto'} h-3.5 w-3.5 opacity-0 transition group-hover:opacity-60`} />}
                         </Link>
                     );
                 })}
@@ -70,48 +72,49 @@ export default function AdminLayout({ header, children }) {
 
             <div className="border-t border-[#9B7847]/30 p-3">
                 <Link href={route('profile.edit')} className={`flex items-center rounded-xl py-3 text-sm text-[#44301D]/75 hover:bg-white/45 hover:text-[#44301D] ${collapsed ? 'justify-center px-2' : 'gap-3 px-3'}`}>
-                    <Icon name="settings" className="h-[19px] w-[19px]" />{!collapsed && 'Settings'}
+                    <Icon name="settings" className="h-[19px] w-[19px]" />{!collapsed && t('settings')}
                 </Link>
             </div>
         </div>
     );
 
     return (
-        <div className="min-h-screen bg-white text-[#44301D]">
-            <aside className={`fixed inset-y-0 left-0 z-30 hidden transition-[width] duration-300 lg:block ${collapsed ? 'w-20' : 'w-64'}`}>{sidebar}</aside>
+        <div dir={dir} className={`min-h-screen bg-white text-[#44301D] ${locale === 'ar' ? 'font-arabic-admin' : ''}`}>
+            <aside className={`fixed inset-y-0 z-30 hidden transition-[width] duration-300 lg:block ${dir === 'rtl' ? 'right-0' : 'left-0'} ${collapsed ? 'w-20' : 'w-64'}`}>{sidebar}</aside>
 
             {drawerOpen && <button className="fixed inset-0 z-40 bg-[#44301D]/55 backdrop-blur-sm lg:hidden" onClick={() => setDrawerOpen(false)} aria-label="Close navigation" />}
-            <aside className={`fixed inset-y-0 left-0 z-50 w-72 transform transition duration-300 lg:hidden ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-                <button onClick={() => setDrawerOpen(false)} className="absolute right-4 top-5 rounded-lg p-2 text-[#44301D]/70 hover:bg-white/45" aria-label="Close menu"><Icon name="close" /></button>
+            <aside className={`fixed inset-y-0 z-50 w-72 transform transition duration-300 lg:hidden ${dir === 'rtl' ? 'right-0' : 'left-0'} ${drawerOpen ? 'translate-x-0' : dir === 'rtl' ? 'translate-x-full' : '-translate-x-full'}`}>
+                <button onClick={() => setDrawerOpen(false)} className={`absolute top-5 rounded-lg p-2 text-[#44301D]/70 hover:bg-white/45 ${dir === 'rtl' ? 'left-4' : 'right-4'}`} aria-label="Close menu"><Icon name="close" /></button>
                 {sidebar}
             </aside>
 
-            <div className={`min-h-screen transition-[padding] duration-300 ${collapsed ? 'lg:pl-20' : 'lg:pl-64'}`}>
+            <div dir={dir} className={`min-h-screen transition-[padding] duration-300 ${dir === 'rtl' ? (collapsed ? 'lg:pr-20' : 'lg:pr-64') : (collapsed ? 'lg:pl-20' : 'lg:pl-64')}`}>
                 <header className="sticky top-0 z-20 flex h-20 items-center border-b border-[#9B7847]/30 bg-[#EED9AE] px-4 text-[#44301D] shadow-sm sm:px-6">
                     <button onClick={() => setDrawerOpen(true)} className="rounded-lg p-2 hover:bg-white/45 lg:hidden" aria-label="Open menu"><Icon name="menu" /></button>
                     <button onClick={() => setCollapsed((value) => !value)} className="hidden rounded-lg p-2 hover:bg-white/45 lg:block" aria-label="Toggle sidebar"><Icon name="menu" /></button>
 
                     <div className="ml-4 hidden w-full max-w-sm sm:block">
                         <label className="relative block">
-                            <span className="sr-only">Search</span><Icon name="search" className="absolute left-3 top-2.5 h-4 w-4 text-[#44301D]/45" />
-                            <input className="w-full rounded-xl border border-[#9B7847]/35 bg-white/45 py-2 pl-10 pr-4 text-sm text-[#44301D] placeholder:text-[#44301D]/45 focus:border-[#49351F] focus:ring-[#49351F]" placeholder="Search the archive…" />
+                            <span className="sr-only">{t('searchArchive')}</span><Icon name="search" className="absolute left-3 top-2.5 h-4 w-4 text-[#44301D]/45" />
+                            <input className="w-full rounded-xl border border-[#9B7847]/35 bg-white/45 py-2 pl-10 pr-4 text-sm text-[#44301D] placeholder:text-[#44301D]/45 focus:border-[#49351F] focus:ring-[#49351F]" placeholder={t('searchArchive')} />
                         </label>
                     </div>
 
                     <div className="ml-auto flex items-center gap-2 sm:gap-4">
-                        <button className="relative rounded-xl p-2.5 text-[#44301D]/75 hover:bg-white/45 hover:text-[#49351F]" aria-label="Notifications"><Icon name="bell" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#49351F] ring-2 ring-[#EED9AE]" /></button>
+                        <div className="flex items-center gap-1 rounded-xl bg-white/35 p-1" aria-label={t('language')}>{languages.map((language) => <button key={language.code} type="button" onClick={() => setLocale(language.code)} className={`rounded-lg px-2 py-1 text-[11px] font-bold ${locale === language.code ? 'bg-[#49351F] text-white' : 'text-[#44301D]/65'}`}>{language.shortLabel}</button>)}</div>
+                        <button className="relative rounded-xl p-2.5 text-[#44301D]/75 hover:bg-white/45 hover:text-[#49351F]" aria-label={t('notifications')}><Icon name="bell" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#49351F] ring-2 ring-[#EED9AE]" /></button>
                         <span className="hidden h-8 w-px bg-[#9B7847]/30 sm:block" />
                         <Dropdown>
                             <Dropdown.Trigger>
                                 <button className="flex items-center gap-3 rounded-xl p-1.5 text-left hover:bg-white/45">
                                     <span className="grid h-9 w-9 place-items-center rounded-full bg-[#D5B66F] text-sm font-bold text-[#44301D]">{user.name?.charAt(0).toUpperCase()}</span>
-                                    <span className="hidden sm:block"><span className="block max-w-32 truncate text-sm font-semibold">{user.name}</span><span className="block text-[11px] text-[#44301D]/55">{user.role === 'organizer' ? 'Organizer' : 'Administrator'}</span></span>
+                                    <span className="hidden sm:block"><span className="block max-w-32 truncate text-sm font-semibold">{user.name}</span><span className="block text-[11px] text-[#44301D]/55">{user.role === 'organizer' ? t('organizer') : t('administrator')}</span></span>
                                     <svg className="hidden h-4 w-4 sm:block" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.3 7.3a1 1 0 0 1 1.4 0l3.3 3.3 3.3-3.3a1 1 0 1 1 1.4 1.4l-4 4a1 1 0 0 1-1.4 0l-4-4a1 1 0 0 1 0-1.4Z" clipRule="evenodd" /></svg>
                                 </button>
                             </Dropdown.Trigger>
                             <Dropdown.Content align="right" width="48">
-                                <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                <Dropdown.Link href={route('logout')} method="post" as="button">Log out</Dropdown.Link>
+                                <Dropdown.Link href={route('profile.edit')}>{t('profile')}</Dropdown.Link>
+                                <Dropdown.Link href={route('logout')} method="post" as="button">{t('logOut')}</Dropdown.Link>
                             </Dropdown.Content>
                         </Dropdown>
                     </div>

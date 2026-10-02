@@ -1,5 +1,6 @@
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head } from '@inertiajs/react';
+import { useLanguage } from '@/i18n';
 
 const icons = {
     events: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M16 3v4M8 3v4M3 10h18" /><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" /></>,
@@ -19,12 +20,13 @@ function StatCard({ icon, label, value, detail, detailValue }) {
 }
 
 export default function Dashboard({ stats }) {
-    return <AdminLayout header={<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="mb-1 text-xs font-semibold uppercase tracking-[.18em] text-[#747A3C]">Admin workspace</p><h1 className="font-serif text-3xl font-bold text-[#44301D]">Dashboard overview</h1><p className="mt-1 text-sm text-[#44301D]/65">A quick look at the Athar archive.</p></div></div>}>
-        <Head title="Dashboard" />
+    const { t } = useLanguage();
+    return <AdminLayout header={<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="mb-1 text-xs font-semibold uppercase tracking-[.18em] text-[#747A3C]">{t('workspace')}</p><h1 className="font-serif text-3xl font-bold text-[#44301D]">{t('dashboardOverview')}</h1><p className="mt-1 text-sm text-[#44301D]/65">{t('quickLook')}</p></div></div>}>
+        <Head title={t('dashboardOverview')} />
         <section className="grid gap-5 md:grid-cols-3" aria-label="Archive statistics">
-            <StatCard icon="events" label="Events" value={stats.events.total} detail="Upcoming events" detailValue={stats.events.upcoming} />
-            <StatCard icon="organizations" label="Organizations" value={stats.organizations.total} detail="Members" detailValue={stats.organizations.members} />
-            <StatCard icon="culturalItems" label="Cultural items" value={stats.culturalItems} detail="In the archive" detailValue={stats.culturalItems} />
+            <StatCard icon="events" label={t('events')} value={stats.events.total} detail={t('upcomingEventsCount')} detailValue={stats.events.upcoming} />
+            <StatCard icon="organizations" label={t('organizations')} value={stats.organizations.total} detail={t('members')} detailValue={stats.organizations.members} />
+            <StatCard icon="culturalItems" label={t('culturalItems')} value={stats.culturalItems} detail={t('inArchive')} detailValue={stats.culturalItems} />
         </section>
     </AdminLayout>;
 }
