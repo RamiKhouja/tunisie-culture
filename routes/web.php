@@ -7,8 +7,13 @@ use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\OrganizationController;
 use App\Http\Controllers\Admin\TypeController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
+use App\Models\CulturalItem;
+use App\Models\Event;
+use App\Models\Organization;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -19,7 +24,25 @@ Route::get('/pictures/tunisia-map.png', function () {
 });
 
 Route::get('/admin', function () {
-    return request()->user()->role === 'organizer' ? redirect()->route('admin.events.create') : Inertia::render('Dashboard');
+    if (request()->user()->role === 'organizer') {
+        return redirect()->route('admin.events.create');
+    }
+
+    $today = now('Africa/Tunis')->toDateString();
+
+    return Inertia::render('Dashboard', [
+        'stats' => [
+            'events' => [
+                'total' => Event::count(),
+                'upcoming' => Event::whereHas('eventDates', fn ($query) => $query->whereDate('date', '>=', $today))->count(),
+            ],
+            'organizations' => [
+                'total' => Organization::count(),
+                'members' => DB::table('organization_user')->distinct()->count('user_id'),
+            ],
+            'culturalItems' => CulturalItem::count(),
+        ],
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
@@ -30,6 +53,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('artists', ArtistController::class)->except('show')->middleware('role:admin');
     Route::resource('locations', LocationController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('role:admin');
     Route::resource('cultural-items', CulturalItemController::class)->except('show')->middleware('role:admin');
+    Route::resource('users', UserController::class)->except('show')->middleware('role:admin');
+    Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status')->middleware('role:admin');
 });
 
 Route::middleware('auth')->group(function () {

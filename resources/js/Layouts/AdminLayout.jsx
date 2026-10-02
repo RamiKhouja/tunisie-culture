@@ -24,6 +24,7 @@ const navigation = [
     { label: 'Overview', icon: 'dashboard', href: 'dashboard' },
     { label: 'Cultural Items', icon: 'collection', href: 'admin.cultural-items.index' },
     { label: 'Organizations', icon: 'users', href: 'admin.organizations.index' },
+    { label: 'Users', icon: 'users', href: 'admin.users.index' },
     { label: 'Events', icon: 'collection', href: 'admin.events.index' },
     { label: 'States & Cities', icon: 'map', href: 'admin.locations.index' },
     { label: 'Categories', icon: 'tags', href: 'admin.categories.index' },
