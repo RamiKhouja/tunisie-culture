@@ -93,14 +93,14 @@ export default function AdminLayout({ header, children }) {
                     <button onClick={() => setDrawerOpen(true)} className="rounded-lg p-2 hover:bg-white/45 lg:hidden" aria-label="Open menu"><Icon name="menu" /></button>
                     <button onClick={() => setCollapsed((value) => !value)} className="hidden rounded-lg p-2 hover:bg-white/45 lg:block" aria-label="Toggle sidebar"><Icon name="menu" /></button>
 
-                    <div className="ml-4 hidden w-full max-w-sm sm:block">
+                    <div className={`hidden w-full max-w-sm sm:block ${dir === 'rtl' ? 'mr-4' : 'ml-4'}`}>
                         <label className="relative block">
-                            <span className="sr-only">{t('searchArchive')}</span><Icon name="search" className="absolute left-3 top-2.5 h-4 w-4 text-[#44301D]/45" />
-                            <input className="w-full rounded-xl border border-[#9B7847]/35 bg-white/45 py-2 pl-10 pr-4 text-sm text-[#44301D] placeholder:text-[#44301D]/45 focus:border-[#49351F] focus:ring-[#49351F]" placeholder={t('searchArchive')} />
+                            <span className="sr-only">{t('searchArchive')}</span><Icon name="search" className={`absolute top-2.5 h-4 w-4 text-[#44301D]/45 ${dir === 'rtl' ? 'right-3' : 'left-3'}`} />
+                            <input className={`w-full rounded-xl border border-[#9B7847]/35 bg-white/45 py-2 text-sm text-[#44301D] placeholder:text-[#44301D]/45 focus:border-[#49351F] focus:ring-[#49351F] ${dir === 'rtl' ? 'pl-4 pr-10' : 'pl-10 pr-4'}`} placeholder={t('searchArchive')} />
                         </label>
                     </div>
 
-                    <div className="ml-auto flex items-center gap-2 sm:gap-4">
+                    <div className={`${dir === 'rtl' ? 'mr-auto' : 'ml-auto'} flex items-center gap-2 sm:gap-4`}>
                         <div className="flex items-center gap-1 rounded-xl bg-white/35 p-1" aria-label={t('language')}>{languages.map((language) => <button key={language.code} type="button" onClick={() => setLocale(language.code)} className={`rounded-lg px-2 py-1 text-[11px] font-bold ${locale === language.code ? 'bg-[#49351F] text-white' : 'text-[#44301D]/65'}`}>{language.shortLabel}</button>)}</div>
                         <button className="relative rounded-xl p-2.5 text-[#44301D]/75 hover:bg-white/45 hover:text-[#49351F]" aria-label={t('notifications')}><Icon name="bell" /><span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[#49351F] ring-2 ring-[#EED9AE]" /></button>
                         <span className="hidden h-8 w-px bg-[#9B7847]/30 sm:block" />
