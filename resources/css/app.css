@@ -12,6 +12,11 @@
     .font-latin-body { font-family: 'Roboto', sans-serif; }
 }
 
+.font-arabic-admin,
+.font-arabic-admin * {
+    font-family: 'Amiri', serif !important;
+}
+
 @layer components {
     .paper-background {
         background-image: url('../../public/images/paper-texture.png'),
