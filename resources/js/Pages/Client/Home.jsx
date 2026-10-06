@@ -95,7 +95,7 @@ function VideoPlayer({ src, title }) {
 }
 
 function MobileFilters({ onReset, contentFilter, onContentFilter, stateCounts, open, onClose, showNames, onToggleNames, selectedState, onSelectState, categoryOptions, categoryFilter, onCategoryFilter }) {
-    const { dir, locale } = useLanguage();
+    const { dir, locale, t } = useLanguage();
     useEffect(() => {
         if (!open) return undefined;
         const closeOnEscape = (event) => event.key === 'Escape' && onClose();
@@ -108,12 +108,19 @@ function MobileFilters({ onReset, contentFilter, onContentFilter, stateCounts, o
 
     return <>
         <button type="button" className="fixed inset-0 z-[70] bg-[#21170f]/50 backdrop-blur-sm lg:hidden" onClick={onClose} aria-label="Close filters" />
-        <aside className={`fixed inset-y-0 z-[80] flex w-[min(88vw,22rem)] flex-col overflow-y-auto ${dir === 'rtl' ? 'left-0 border-r shadow-[12px_0_30px_rgba(43,29,16,0.25)]' : 'right-0 border-l shadow-[-12px_0_30px_rgba(43,29,16,0.25)]'} bg-[#f7ead0] p-5 text-[#49351F] lg:hidden`} role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
-            <div className="flex items-center justify-between border-b border-[#98754d]/25 pb-5">
-        <div><p className="text-[10px] font-bold uppercase tracking-[.22em] text-[#846440]">Explore</p><h2 id="mobile-filters-title" className={`${locale === 'ar' ? 'font-arabic-title' : 'font-serif'} text-2xl font-bold`}>Filters</h2></div>
+        <aside className={`mobile-filters fixed inset-y-0 z-[80] flex w-[min(88vw,22rem)] flex-col overflow-y-auto ${dir === 'rtl' ? 'left-0 border-r shadow-[12px_0_30px_rgba(43,29,16,0.25)]' : 'right-0 border-l shadow-[-12px_0_30px_rgba(43,29,16,0.25)]'} bg-[#e7d6cc] text-[#49351F] ${locale === 'ar' ? 'filter-arabic' : ''} lg:hidden`} role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
+            <FilterTop />
+            <div className="p-5">
+            <div className="border-b border-[#98754d]/25 pb-5">
+                <div className="flex items-center justify-between">
+                    <div><h2 id="mobile-filters-title" className={`${locale === 'ar' ? 'font-arabic-title' : 'font-serif'} text-2xl font-bold`}>{t('exploreTunisia')}</h2></div>
                 <button type="button" onClick={onClose} className="grid size-10 place-items-center rounded-full border border-[#49351F]/35 text-xl transition hover:bg-[#49351F] hover:text-[#f7ead0]" aria-label="Close filters">×</button>
+                </div>
+                <p className="mt-1 text-xs leading-5 text-[#80674c]">{t('exploreSubtitle')}</p>
+                <div className="filter-narrow-ornament mt-4" aria-hidden="true" />
             </div>
             <MapFilters onReset={onReset} contentFilter={contentFilter} onContentFilter={onContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={onCategoryFilter} selectedState={selectedState} onSelectState={onSelectState} stateCounts={stateCounts} showNames={showNames} onToggleNames={onToggleNames} />
+            </div>
         </aside>
     </>;
 }
@@ -159,29 +166,42 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
     const stateCounts = Object.fromEntries(governorates.map(state => [state, categoryItems.filter(item => item.state === state).length]));
     return <ClientLayout>
         <Head title={t('mapLabel')} />
-        <main className="min-h-[calc(100dvh-5rem)] p-3 sm:p-5 lg:p-6">
-            <div className="grid items-start gap-4 lg:grid-cols-2 lg:gap-6">
-                <aside dir={locale === 'ar' ? 'ltr' : 'rtl'} className="content-panel-scroll hidden h-[calc(100dvh-6.5rem)] min-h-[32rem] min-w-0 overflow-y-auto lg:block">
-                    <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className="p-6">
-                    <div className="border-b border-[#98754d]/25 pb-5">
-                        <p className="text-xs font-bold uppercase tracking-[.22em] text-[#846440]">ATHAR</p>
-                        <h1 className={`mt-2 text-3xl font-bold text-[#49351F] ${locale === 'ar' ? 'font-arabic-title' : 'font-serif'}`}>{t('exploreTunisia')}</h1>
-                        <p className="mt-2 max-w-sm text-sm leading-6 text-[#6b5138]">{t('exploreSubtitle')}</p>
+        <main className="p-3 sm:p-5 lg:p-6">
+            <div className="grid items-start gap-4 lg:grid-cols-[minmax(18rem,1fr)_minmax(0,2fr)] lg:gap-6">
+                <aside dir={locale === 'ar' ? 'ltr' : 'rtl'} className="hidden min-w-0 lg:block">
+                    <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`filter-panel ${locale === 'ar' ? 'filter-arabic' : ''}`}>
+                    <FilterTop />
+                    <div className="p-6">
+                    <div className="border-b border-[#98754d]/30 pb-5">
+                        <h1 className={`mt-2 text-3xl font-bold text-[#18293b] ${locale === 'ar' ? 'font-arabic-title' : 'font-serif'}`}>{t('exploreTunisia')}</h1>
+                        <p className="mt-2 max-w-sm text-sm leading-6 text-[#43556b]">{t('exploreSubtitle')}</p>
+                        <div className="filter-narrow-ornament" aria-hidden="true" />
                     </div>
                     <MapFilters onReset={resetFilters} contentFilter={contentFilter} onContentFilter={setContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={changeCategoryFilter} selectedState={selectedState} onSelectState={setSelectedState} stateCounts={stateCounts} showNames={showNames} onToggleNames={(event) => setShowNames(event.target.checked)} />
                     {discoveryContent}
                     </div>
-                </aside>
-                <section className="cultural-map relative h-[calc(100dvh-6.5rem)] min-h-[32rem] min-w-0 drop-shadow-[0_8px_12px_rgba(73,53,31,0.18)]" aria-label={t('mapLabel')}>
-                    <div className="map-paper-edge relative h-full overflow-hidden bg-[#d9e5df]">
-                        <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={mapItems} onSelectItem={setSelectedItem} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
-                        <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-10 shadow-[inset_0_8px_8px_rgba(139,85,42,0.28),inset_0_0_28px_rgba(139,85,42,0.2)]" />
                     </div>
+                </aside>
+                <div dir="ltr" className="mb-2 flex justify-end lg:hidden">
+                    <button dir={locale === 'ar' ? 'rtl' : 'ltr'} type="button" onClick={() => setFiltersOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-[#49351F]/20 bg-[#f7ead0]/95 px-3 py-2 text-sm font-semibold text-[#49351F] shadow-md transition hover:bg-white" aria-label={t('openFilters')}>
+                        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+                        <span>{t('filters')}</span>
+                    </button>
+                </div>
+                <section className="cultural-map relative h-[46rem] min-w-0 sm:h-[56rem] lg:h-[72rem]" aria-label={t('mapLabel')}>
+                    <div className="map-paper-edge relative h-full overflow-hidden bg-[#d9e5df]">
+                        <span className="map-border map-border-top" aria-hidden="true" />
+                        <span className="map-border map-border-right" aria-hidden="true" />
+                        <span className="map-border map-border-bottom" aria-hidden="true" />
+                        <span className="map-border map-border-left" aria-hidden="true" />
+                        <div className="map-paper-content">
+                            <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={mapItems} onSelectItem={setSelectedItem} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
+                        </div>
+                    </div>
+                    <img src="/storage/images/evergreen-tree.svg" alt="" aria-hidden="true" className="map-evergreen-frame" />
+                    <img src="/storage/images/olive-tree.svg" alt="" aria-hidden="true" className="map-olive-frame" />
                     {/* <img src="/images/top-righ-leaf.png" alt="" aria-hidden="true" draggable={false} className="pointer-events-none absolute -right-2 -top-2 z-10 h-auto w-36 max-w-[35%] select-none sm:-right-4 sm:-top-6 sm:w-44" />
                     <img src="/images/bottom-left-leaf.png" alt="" aria-hidden="true" draggable={false} className="pointer-events-none absolute -bottom-2 -left-2 z-10 h-auto w-28 max-w-[30%] select-none sm:-bottom-8 sm:-left-8 sm:w-40" /> */}
-                    <button type="button" onClick={() => setFiltersOpen(true)} className="absolute left-3 top-3 z-10 grid size-11 place-items-center rounded-xl border border-[#49351F]/20 bg-[#f7ead0]/95 text-[#49351F] shadow-md transition hover:bg-white lg:hidden" aria-label="Open filters">
-                        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
-                    </button>
                 </section>
             </div>
             <div className="px-2 lg:hidden">{discoveryContent}</div>
@@ -207,12 +227,32 @@ function MapFilters({ onReset, contentFilter, onContentFilter, categoryOptions, 
             <svg aria-hidden="true" viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M9 4 4 9l5 5" /><path d="M4 9h9a6 6 0 0 1 0 12h-2" /></svg>
             {t('resetFilters')}
         </button>
+        <MapKey options={categoryOptions} />
     </section>;
+}
+
+function MapKey({ options }) {
+    const { t, locale } = useLanguage();
+    return <div className="map-key mt-6 border-t border-[#98754d]/25 pt-5" aria-label="Map key">
+        <div className="flex flex-wrap gap-3 text-xs text-[#80674c]">
+            <span className="inline-flex items-center gap-2"><span className="map-key-cultural"><span aria-hidden="true">✦</span></span>{t('culturalContent')}</span>
+            <span className="inline-flex items-center gap-2"><span className="map-key-event" />{t('events')}</span>
+        </div>
+    </div>;
+}
+
+function CategoryGlyph({ category, index = 0 }) {
+    const types = ['monument', 'craft', 'music', 'architecture', 'tradition', 'story'];
+    return category.icon_url ? <img src={category.icon_url} alt="" className="size-5 object-contain" /> : <ItemIcon type={types[index % types.length]} className="size-4" />;
 }
 
 function ContentFilter({ value, onChange }) {
     const { t } = useLanguage();
-    return <fieldset><legend className="sr-only">{t('mapLabel')}</legend><div className="flex gap-2">{[['all', t('all')], ['cultural', t('culturalContent')], ['events', t('events')]].map(([key, label]) => <span key={key} className="flex min-w-0 flex-1 drop-shadow-[0_4px_3px_rgba(73,53,31,0.3)]"><button type="button" aria-pressed={value === key} onClick={() => onChange(key)} className={`filter-paper w-full px-3 py-4 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#49351F] ${value === key ? 'bg-[#49351F] text-[#fff3d9]' : 'bg-[#ead8b4] text-[#49351F] hover:bg-[#dfc69b]'}`}>{label}</button></span>)}</div></fieldset>;
+    return <fieldset><legend className="sr-only">{t('mapLabel')}</legend><div className="content-filter-tabs">{[['all', t('all')], ['cultural', t('culturalContent')], ['events', t('events')]].map(([key, label]) => <button key={key} type="button" aria-pressed={value === key} onClick={() => onChange(key)} className={`content-filter-tab ${value === key ? 'is-active' : ''}`}>{label}</button>)}</div></fieldset>;
+}
+
+function FilterTop() {
+    return <div className="filter-top-border" aria-hidden="true" />;
 }
 
 const translated = name => name?.en || name?.fr || name?.ar || '';
@@ -320,12 +360,15 @@ function CategoryDrawer({ group, onClose }) {
 
 function CategoryFilters({ options, value, onChange }) {
     const { locale, t } = useLanguage();
-    const chipClass = active => `relative flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition ${active ? 'border-[#765334] bg-[#c7ac7c]/60 text-[#392817]' : 'border-[#98754d]/40 bg-transparent hover:bg-[#d8bf94]/30'}`;
-    return <div className="mt-10 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
-        <button type="button" aria-pressed={value === null} onClick={() => onChange(null)} className={chipClass(value === null)}>{t('allCategories')}</button>
-        {options.map(({ category, count }) => <button type="button" key={category.id} aria-pressed={value === category.id} onClick={() => onChange(value === category.id ? null : category.id)} className={chipClass(value === category.id)}>
-            <span className="grid size-8 place-items-center rounded-full text-white" style={{ backgroundColor: category.color || '#8f3527' }}>{category.icon_url ? <img src={category.icon_url} alt="" className="size-5 object-contain" /> : translated(category.name).slice(0, 1)}</span>
+    const chipClass = active => `relative flex items-center gap-2 rounded-xl border px-2 py-2 text-sm transition ${active ? 'border-[#ad4f28] bg-[#fff4e3] ring-1 ring-[#ad4f28]' : 'border-[#b9875b]/60 bg-[#f7ecd9]/80 hover:bg-[#fff4e3]'}`;
+    return <div className="mt-6" role="group" aria-label="Filter by category">
+        <h3 className="mb-2 text-sm font-bold text-[#8d3f20]">{t('category')}</h3>
+        <div className="flex flex-wrap gap-2">
+        <button type="button" aria-pressed={value === null} onClick={() => onChange(null)} className={chipClass(value === null)}><span className="grid size-8 place-items-center rounded-lg bg-[#765334] text-white" aria-hidden="true">✦</span>{t('allCategories')}</button>
+        {options.map(({ category, count }, index) => <button type="button" key={category.id} aria-pressed={value === category.id} onClick={() => onChange(value === category.id ? null : category.id)} className={chipClass(value === category.id)}>
+            <span className="grid size-8 place-items-center rounded-full text-white" style={{ backgroundColor: category.color || '#8f3527' }}><CategoryGlyph category={category} index={index} /></span>
             {localizedValue(category.name, locale)} ({count})
         </button>)}
+        </div>
     </div>;
 }

@@ -1,5 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&family=Cormorant+Garamond:wght@600;700&family=Reem+Kufi:wght@500;600;700&family=Roboto:wght@400;500;700&display=swap');
 
+@font-face {
+    font-family: 'Bouazzi Maghribi';
+    src: url('/fonts/BouazziMaghribi-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,6 +19,32 @@
     .font-latin-title { font-family: 'Cormorant Garamond', serif; }
     .font-latin-body { font-family: 'Roboto', sans-serif; }
 }
+
+.filter-arabic,
+.filter-arabic * {
+    font-family: 'Bouazzi Maghribi', serif !important;
+}
+
+.filter-arabic .text-sm { font-size: 1.1rem !important; }
+.filter-arabic .text-xs { font-size: 1rem !important; }
+.filter-arabic .text-\[10px\] { font-size: .85rem !important; }
+.filter-arabic .content-filter-tab { font-size: 1.25rem; }
+
+.nav-arabic,
+.nav-arabic * {
+    font-family: 'Bouazzi Maghribi', serif !important;
+}
+
+.nav-arabic .maqamat-name { font-size: 36px; }
+.nav-arabic .maqamat-subtitle { font-size: 13px; }
+.nav-arabic nav a { font-size: 20px; font-weight: 400; }
+.nav-arabic nav a.nav-active { font-weight: 600; }
+.nav-arabic .nav-language-control,
+.nav-arabic .nav-auth-button { font-size: 16px; }
+.nav-arabic .nav-language-control > .text-xs { font-size: 18px; }
+.nav-arabic .nav-auth-button { font-weight: 600; }
+.nav-arabic #mobile-navigation a { font-size: 20px; font-weight: 400; }
+.nav-arabic #mobile-navigation a.nav-active { font-weight: 600; }
 
 .font-arabic-admin,
 .font-arabic-admin * {
@@ -28,16 +62,139 @@
     }
 }
 
-.filter-paper {
-    background-image: url('../../public/images/paper-texture.png');
-    background-size: 329px auto;
-    background-blend-mode: multiply;
-    clip-path: polygon(0 7%, 5% 3%, 11% 6%, 18% 1%, 24% 5%, 33% 2%, 40% 6%, 49% 0, 57% 4%, 65% 2%, 74% 6%, 83% 1%, 91% 5%, 98% 2%, 100% 22%, 98% 43%, 100% 65%, 98% 95%, 91% 98%, 83% 94%, 75% 100%, 66% 96%, 57% 99%, 48% 95%, 39% 100%, 30% 96%, 21% 99%, 12% 95%, 2% 98%, 0 76%, 2% 55%, 0 34%);
+.filter-panel {
+    overflow: hidden;
+    border: 1px solid rgba(171, 125, 83, .62);
+    border-radius: 1.5rem;
+    background: #e7d6cc;
+    color: #49351f;
+    box-shadow: 0 8px 18px rgba(73, 53, 31, .08);
 }
 
-.filter-paper:focus-visible {
-    /* Keep the keyboard focus indicator inside the torn edge. */
-    outline-offset: -7px;
+.filter-top-border {
+    height: 4.25rem;
+    border-bottom: 1px solid rgba(133, 91, 54, .65);
+    background-color: #ead9aa;
+    background-image: url('/pictures/filter-top-border.svg');
+    background-repeat: repeat-x;
+    background-position: center;
+    background-size: auto 4.25rem;
+}
+
+.filter-narrow-ornament {
+    display: block;
+    width: 100%;
+    height: 1rem;
+    overflow: hidden;
+    margin-top: 1.25rem;
+    background-image: url('/pictures/filter-narrow-ornament.svg');
+    background-repeat: repeat-x;
+    background-position: left center;
+    background-size: auto 1rem;
+}
+
+.guest-login-panel {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #a4502a;
+    border-radius: 1rem;
+    box-shadow: none;
+}
+
+.guest-login-panel .login-label,
+.guest-login-panel .register-label {
+    display: block;
+    color: #49351f;
+    font-size: 1rem;
+    font-weight: 600;
+    padding-bottom: 2px;
+}
+
+.guest-login-panel .login-input,
+.guest-login-panel .register-input {
+    border: 1px solid #a4502a !important;
+    background-color: #fff8e6;
+    box-shadow: none;
+}
+
+.guest-login-panel .login-input:focus,
+.guest-login-panel .register-input:focus {
+    border: 2px solid #a4502a !important;
+    background-color: #e8f0fe !important;
+    box-shadow: none !important;
+    outline: none;
+}
+
+.login-primary-button,
+.login-primary-button:hover,
+.login-primary-button:focus,
+.login-primary-button:active {
+    background-color: #a4502a !important;
+    color: #f7ead0 !important;
+    font-weight: 600 !important;
+}
+
+.login-primary-button:hover,
+.login-primary-button:focus { background-color: #913d20 !important; }
+
+.guest-login-panel > :not(.login-bottom-border) {
+    position: relative;
+    z-index: 1;
+}
+
+.login-bottom-border {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    display: block;
+    height: 2.5rem;
+    pointer-events: none;
+    background: url('/pictures/filter-top-border.svg') repeat-x center / auto 2.5rem;
+    transform: rotateY(180deg);
+}
+
+@media (max-width: 639px) {
+    .guest-login-panel { padding: 2.5rem 2rem 5rem; }
+    .login-bottom-border { height: 2rem; background-size: auto 2rem; }
+}
+
+.mobile-filters .filter-top-border { flex: none; width: 100%; background-repeat: repeat-x; }
+.mobile-filters .content-filter-tab { font-size: .95rem; padding: .55rem .4rem; }
+.mobile-filters.filter-arabic .content-filter-tab { font-size: 0.9rem; }
+
+.content-filter-tabs {
+    display: flex;
+    gap: .25rem;
+    margin-top: 1.5rem;
+    padding: .25rem;
+    border: 1px solid rgba(171, 125, 83, .75);
+    border-radius: .7rem;
+    background: rgba(244, 231, 199, .7);
+}
+
+.content-filter-tab {
+    flex: 1 1 0%;
+    min-width: 0;
+    border-radius: .5rem;
+    padding: .7rem .55rem;
+    color: #18293b;
+    font-size: .875rem;
+    font-weight: 400;
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.content-filter-tab:hover,
+.content-filter-tab.is-active {
+    background: #ad4f28;
+    color: #fff8ed;
+    font-weight: 700;
+}
+
+.content-filter-tab:focus-visible {
+    outline: 2px solid #49351f;
+    outline-offset: 2px;
 }
 
 .map-paper-edge {
@@ -112,27 +269,104 @@
 .rich-text blockquote { border-inline-start: 3px solid #9b7847; padding-inline-start: 1em; }
 .map-point { border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 1px 5px #0005; display: grid; place-items: center; }
 .map-point:focus-visible { outline: 3px solid #49351f; outline-offset: 4px; }
+.map-cultural-point { position: relative; isolation: isolate; border: 0; background-color: transparent !important; box-shadow: none; opacity: 1; }
+.map-cultural-point::before, .category-map-point::before { content: ''; position: absolute; z-index: 0; inset: 11.5%; border-radius: 50%; background: var(--point-color); pointer-events: none; }
+.map-cultural-point::after, .category-map-point::after { content: ''; position: absolute; z-index: 1; inset: 0; background: url('/storage/images/badge-cultural-item.svg') center / 100% 100% no-repeat; pointer-events: none; }
 .map-cluster { opacity: .7; border-color: #ffffff77; color: white; font-weight: 700; font-size: 15px; }
 .map-cluster span { text-shadow: 0 1px 4px #000; }
+.map-event-cluster { opacity: 1; border-color: #f2d8a0; color: #4a2e1e; }
+.map-event-cluster span { text-shadow: none; }
 .map-point-glow::before { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--point-color); box-shadow: 0 0 12px var(--point-color); animation: event-glow 2s ease-in-out infinite; pointer-events: none; }
 @keyframes event-glow { 0%, 100% { opacity: .25; scale: 1; } 50% { opacity: .85; scale: 1.35; } }
 @media (prefers-reduced-motion: reduce) { .map-point-glow::before { animation: none; opacity: .7; } }
 
 .category-map-point {
+    position: relative;
+    isolation: isolate;
     display: grid;
     place-items: center;
     width: 39px;
     height: 39px;
-    border: 2px solid #fff5dc;
+    border: 0;
     border-radius: 50%;
+    background-color: transparent !important;
+    background-image: url('/storage/images/badge-cultural-item.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
     color: white;
     font-size: 11px;
     font-weight: 700;
-    box-shadow: 0 3px 12px #49351f55;
+    box-shadow: none;
+    opacity: 1;
     cursor: pointer;
 }
-.category-map-point img { width: 22.5px; height: 22.5px; object-fit: contain; }
+.category-map-point img { position: relative; z-index: 2; width: 18px; height: 18px; object-fit: contain; }
 .category-map-point:hover, .category-map-point:focus-visible { outline: 3px solid #49351f; outline-offset: 3px; }
+
+/* Maqamat Tunisia visual system */
+:root { --maqamat-paper: #f3e5c8; --maqamat-panel: #ead9cf; --maqamat-ink: #1e2a3a; --maqamat-blue: #2e3c8f; --maqamat-terracotta: #a4502a; --maqamat-olive: #a9be84; --maqamat-olive-dark: #40582e; }
+.maqamat-header { height: 5.125rem; }
+.maqamat-header-ornament { display: none; }
+.maqamat-header-ornament { display: block; position: absolute; top: 5rem; right: 0; left: 0; height: 2.4rem; background-image: url('/storage/images/ornamental-border-block.svg'); background-repeat: repeat-x; background-size: auto 2.4rem; }
+.maqamat-brand { color: var(--maqamat-ink); }
+.maqamat-logo { background: linear-gradient(145deg, #6e82cf 0 53%, #e9b824 54% 72%, #1f5a3a 73%); box-shadow: inset 0 0 0 2px #f3e5c8; }
+.maqamat-map { isolation: isolate; background: #1f6386; }
+.maqamat-map > .maplibregl-map { position: relative; z-index: 1; }
+.maqamat-map .maplibregl-canvas { background: transparent !important; }
+.maqamat-map .maplibregl-ctrl-group { overflow: hidden; border: 1px solid #b48a66; border-radius: 10px; background: #f6eddc; box-shadow: 0 2px 8px rgba(43,29,16,.18); }
+.maqamat-map .maplibregl-ctrl-group button { width: 2.55rem; height: 2.55rem; color: #1e2a3a; background: #f6eddc; }
+.maqamat-map .maplibregl-ctrl-attrib { display: none; }
+.map-paper-edge { clip-path: none !important; border: 0; border-radius: 0; background: #eadbc0; box-shadow: none; }
+.map-paper-content { position: absolute; z-index: 1; inset: 32px; overflow: hidden; }
+.map-border { position: absolute; z-index: 30; display: block; pointer-events: none; background-repeat: repeat; }
+.map-border-top,.map-border-bottom { left: 0; right: 0; height: 32px; background-image: url('/storage/images/border-horizontal-tile.svg'); background-repeat: repeat-x; background-size: auto 32px; }
+.map-border-top { top: 0; }
+.map-border-bottom { bottom: 0; }
+.map-border-left,.map-border-right { top: 0; bottom: 0; width: 32px; background-image: url('/storage/images/border-vertical-tile.svg'); background-repeat: repeat-y; background-size: 32px auto; }
+.map-border-left { left: 0; }
+.map-border-right { right: 0; }
+.map-zoom-fade { position: absolute; inset: 0; z-index: 4; pointer-events: none; transition: opacity .18s ease-out; }
+.map-sea-waves { position: absolute; inset: 0; z-index: 2; display: block; width: 100%; height: 100%; pointer-events: none; }
+.map-label { position: absolute; z-index: 4; pointer-events: none; font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem, 3vw, 3rem); font-style: italic; color: #43557f; text-shadow: 0 1px #f3e5c8, 1px 0 #f3e5c8; }
+.maqamat-map:not(.maqamat-map-ar) .map-label { font-size: clamp(1rem, 2vw, 2rem); }
+.maqamat-map-ar .map-label { font-family: 'Bouazzi Maghribi', serif; font-style: normal; direction: rtl; }
+.map-label-sea { top: calc(25% - 8px); right: 5%; color: #f7ead0; text-shadow: 0 1px #2e3c8f, 1px 0 #2e3c8f; }
+.map-label-algeria { left: 15%; top: 58%; }
+.map-label-libya { right: 24%; bottom: 13%; }
+.map-illustrations { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.map-cloud { position: absolute; height: auto; object-fit: contain; opacity: .95; }
+.map-cloud-one { top: 4%; left: 12%; width: clamp(9rem, 20vw, 17rem); }
+.map-cloud-two { top: 35%; right: 4%; width: clamp(8rem, 18vw, 15rem); }
+.map-cloud-three { top: 54%; right: 18%; width: clamp(6rem, 13vw, 11rem); }
+.map-bird-flight { position: absolute; z-index: 5; top: 16%; right: -10%; width: clamp(4rem, 8vw, 7rem); height: auto; opacity: 0; animation: maqamat-bird-flight 60s linear infinite; }
+.map-bird-flight-top { top: 3%; }
+.map-bird-flight-middle { animation-delay: 20s; }
+@keyframes maqamat-bird-flight {
+    0% { opacity: 0; transform: translateX(0); }
+    10% { opacity: 1; }
+    76% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-115vw); }
+}
+.map-boat { position: absolute; top: 15%; right: 18%; width: clamp(3.35rem, 8vw, 6.7rem); height: auto; opacity: 1; filter: drop-shadow(0 4px 2px rgba(43,29,16,.35)); animation: maqamat-boat 12s ease-in-out infinite; }
+@keyframes maqamat-boat { 0%,100% { translate: -18px 0; rotate: -3deg; } 50% { translate: 26px 8px; rotate: 3deg; } }
+.map-compass { position: absolute; z-index: 6; top: 46%; right: 4%; width: clamp(7rem, 13vw, 10rem); height: auto; pointer-events: none; }
+.map-zoom-controls { position: absolute; z-index: 7; top: 1rem; right: 1rem; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #b48a66; border-radius: 10px; background: #f6eddc; box-shadow: 0 2px 8px rgba(43,29,16,.18); }
+.map-zoom-controls button { width: 2.6rem; height: 2.6rem; border: 0; color: #1e2a3a; background: #f6eddc; font-size: 1.6rem; cursor: pointer; }
+.map-zoom-controls button + button { border-top: 1px solid #c9a783; }
+.map-zoom-controls button:hover { background: #eadcc0; }
+.maqamat-tree { position: absolute; z-index: 15; pointer-events: none; background-repeat: no-repeat; background-size: contain; }
+.map-evergreen-frame { position: absolute; z-index: 40; top: -1.7rem; left: -1.5rem; width: 5.5rem; height: 15rem; object-fit: contain; pointer-events: none; }
+.map-olive-frame { position: absolute; z-index: 40; right: -2rem; bottom: 0.4rem; width: 13rem; height: 13rem; object-fit: contain; pointer-events: none; }
+.map-key-place,.map-key-cluster { display: grid; place-items: center; width: 1.45rem; height: 1.45rem; border-radius: 50%; color: white; background: #8a5a3a; font-size: .72rem; }
+.map-key-cultural { position: relative; isolation: isolate; display: grid; place-items: center; width: 1.8rem; height: 1.8rem; color: #4a2e1e; background: transparent; font-size: .82rem; }
+.map-key-cultural::before { content: ''; position: absolute; z-index: 0; inset: 11.5%; border-radius: 50%; background: transparent; }
+.map-key-cultural::after { content: ''; position: absolute; z-index: 1; inset: 0; background: #4a2e1e; -webkit-mask: url('/storage/images/badge-cultural-item.svg') center / 100% 100% no-repeat; mask: url('/storage/images/badge-cultural-item.svg') center / 100% 100% no-repeat; pointer-events: none; }
+.map-key-cultural span { position: relative; z-index: 2; color: #4a2e1e; }
+.map-key-event { width: .72rem; height: .72rem; border-radius: 50%; background: #c98b3a; box-shadow: 0 0 0 3px #f0d9a9, 0 0 0 5px rgba(201,139,58,.35); animation: map-key-event-twinkle 2.2s ease-in-out infinite; }
+@keyframes map-key-event-twinkle { 0%, 100% { opacity: .7; scale: .92; box-shadow: 0 0 0 3px #f0d9a9, 0 0 0 5px rgba(201,139,58,.25); } 50% { opacity: 1; scale: 1.12; box-shadow: 0 0 0 3px #f0d9a9, 0 0 0 7px rgba(201,139,58,.5); } }
+.map-key-cluster { background: #4a2e1e; }
+@media (max-width: 1023px) { .maqamat-header { height: 6.5rem; } .maqamat-header-ornament { display: block; top: 4.6rem; height: 1.9rem; background-size: auto 1.9rem; } .map-paper-content { inset: 18px; } .map-border-top,.map-border-bottom { height: 18px; background-size: auto 18px; } .map-border-left,.map-border-right { width: 18px; background-size: 18px auto; } .map-label-sea,.map-label-algeria,.map-label-libya,.map-cloud-two,.map-cloud-three { display: none; } .map-compass { top: auto; right: calc(2% - 8px); bottom: calc(2% - 16px); } .map-boat { top: 23%; right: 1%; } .map-evergreen-frame,.map-olive-frame { display: none; } }
 
 /* Reverse only the scroll container direction; its content keeps the locale direction. */
 .content-panel-scroll {

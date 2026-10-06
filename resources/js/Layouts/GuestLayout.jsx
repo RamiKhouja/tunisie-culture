@@ -1,16 +1,28 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Link } from '@inertiajs/react';
+import { useLanguage } from '@/i18n';
 
 export default function GuestLayout({ children }) {
+    const { dir, locale, t } = useLanguage();
+
     return (
-        <div className="flex min-h-screen flex-col items-center bg-[#f7ead0] px-4 py-8 text-[#44301D] sm:justify-center sm:pt-10">
+        <div dir={dir} className={`flex min-h-screen flex-col items-center bg-[#f7ead0] px-4 py-8 text-[#44301D] sm:justify-center sm:pt-10 ${locale === 'ar' ? 'font-arabic-body' : 'font-latin-body'}`}>
             <div>
-                <Link href="/">
-                    <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
+                <Link href="/" className="flex items-center gap-3">
+                    <ApplicationLogo alt={t('maqamatName')} className="h-20 w-20 shrink-0" />
+                    <span>
+                        <span className={`block text-2xl font-bold tracking-[0.02em] text-[#2e3c8f] ${locale === 'ar' ? 'font-arabic-title' : 'font-latin-title'}`}>
+                            {t('maqamatName')}
+                        </span>
+                        <span className="maqamat-subtitle block text-[10px] tracking-[0.04em] text-[#4a5670]">
+                            {t('maqamatSubtitle')}
+                        </span>
+                    </span>
                 </Link>
             </div>
 
-            <div className="mt-6 w-full overflow-hidden rounded-2xl border border-[#9B7847]/30 bg-[#fff8e6] px-6 py-6 shadow-[0_18px_60px_rgba(73,53,31,0.14)] sm:max-w-4xl sm:px-10 sm:py-8">
+            <div className="guest-login-panel mt-6 w-full bg-[#e7d6cc] px-10 pb-20 pt-10 sm:max-w-4xl">
+                <span className="login-bottom-border" aria-hidden="true" />
                 {children}
             </div>
         </div>
