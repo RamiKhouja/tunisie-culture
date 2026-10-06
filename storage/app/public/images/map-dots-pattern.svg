@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="110" height="110" viewBox="0 0 110 110">
+  <defs>
+    <pattern id="pdots" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="3" r="1" fill="#C9B48A" fill-opacity="0.6"></circle><circle cx="8" cy="8.5" r="0.9" fill="#FBF4E3"></circle></pattern>
+  </defs>
+  <rect width="110" height="110" fill="url(#pdots)"/>
+</svg>
