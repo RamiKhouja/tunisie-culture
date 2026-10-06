@@ -111,6 +111,56 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
         map.touchZoomRotate.disableRotation();
         map.keyboard.disableRotation();
         mapRef.current = map;
+
+        // MapLibre prevents the browser's default touch scrolling while a
+        // one-finger pan is active. At a vertical map bound there is no more
+        // map movement to consume, so hand the rest of that gesture to the
+        // page instead of leaving the user stuck inside the map.
+        const touchState = { lastY: null, handedOff: false };
+        const atVerticalBound = (deltaY) => {
+            const maxBounds = map.getMaxBounds();
+            if (!maxBounds) return false;
+
+            const viewport = map.getBounds();
+            const epsilon = 0.0005;
+            return deltaY > 0
+                ? viewport.getSouth() <= maxBounds.getSouth() + epsilon
+                : viewport.getNorth() >= maxBounds.getNorth() - epsilon;
+        };
+        const onTouchStart = (event) => {
+            touchState.lastY = event.touches.length === 1 ? event.touches[0].clientY : null;
+            touchState.handedOff = false;
+        };
+        const onTouchMove = (event) => {
+            if (event.touches.length !== 1 || touchState.lastY === null) return;
+
+            const currentY = event.touches[0].clientY;
+            const deltaY = currentY - touchState.lastY;
+            touchState.lastY = currentY;
+
+            if (!touchState.handedOff && atVerticalBound(deltaY)) {
+                touchState.handedOff = true;
+                map.dragPan.disable();
+                container.current.style.touchAction = 'pan-y';
+            }
+
+            if (touchState.handedOff && deltaY) {
+                // Finger-up means page-down, matching native mobile scrolling.
+                event.preventDefault();
+                window.scrollBy(0, -deltaY);
+            }
+        };
+        const onTouchEnd = () => {
+            touchState.lastY = null;
+            if (touchState.handedOff) map.dragPan.enable();
+            touchState.handedOff = false;
+            container.current.style.touchAction = '';
+        };
+        const mapContainer = container.current;
+        mapContainer.addEventListener('touchstart', onTouchStart, { capture: true, passive: true });
+        mapContainer.addEventListener('touchmove', onTouchMove, { capture: true, passive: false });
+        mapContainer.addEventListener('touchend', onTouchEnd, { capture: true, passive: true });
+        mapContainer.addEventListener('touchcancel', onTouchEnd, { capture: true, passive: true });
         const initialZoom = map.getZoom();
         const updateDecorOpacity = () => {
             const progress = Math.max(0, Math.min(1, (map.getZoom() - initialZoom) / 2));
@@ -164,7 +214,18 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
         });
         const observer = new ResizeObserver(() => map.resize());
         observer.observe(container.current);
-        return () => { cancelled = true; setReady(false); map.off('zoom', updateDecorOpacity); observer.disconnect(); map.remove(); if (mapRef.current === map) mapRef.current = null; };
+        return () => {
+            cancelled = true;
+            setReady(false);
+            map.off('zoom', updateDecorOpacity);
+            observer.disconnect();
+            mapContainer.removeEventListener('touchstart', onTouchStart, { capture: true });
+            mapContainer.removeEventListener('touchmove', onTouchMove, { capture: true });
+            mapContainer.removeEventListener('touchend', onTouchEnd, { capture: true });
+            mapContainer.removeEventListener('touchcancel', onTouchEnd, { capture: true });
+            map.remove();
+            if (mapRef.current === map) mapRef.current = null;
+        };
     }, [locale]);
 
     useEffect(() => {
