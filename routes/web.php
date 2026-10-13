@@ -3,16 +3,20 @@
 use App\Http\Controllers\Admin\ArtistController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CulturalItemController;
+use App\Http\Controllers\Admin\CraftController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\LocationController;
 use App\Http\Controllers\Admin\OrganizationController;
+use App\Http\Controllers\Admin\SiteController;
 use App\Http\Controllers\Admin\TypeController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\MapController;
 use App\Http\Controllers\ProfileController;
 use App\Models\CulturalItem;
+use App\Models\Craft;
 use App\Models\Event;
 use App\Models\Organization;
+use App\Models\Site;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,6 +25,10 @@ Route::get('/', MapController::class);
 
 Route::get('/pictures/tunisia-map.png', function () {
     return response()->file(storage_path('app/pictures/tunisia-map.png'));
+});
+
+Route::get('/pictures/octagon-outline.svg', function () {
+    return response()->file(storage_path('app/pictures/octagon-outline.svg'), ['Content-Type' => 'image/svg+xml']);
 });
 
 Route::get('/admin', function () {
@@ -41,6 +49,8 @@ Route::get('/admin', function () {
                 'members' => DB::table('organization_user')->distinct()->count('user_id'),
             ],
             'culturalItems' => CulturalItem::count(),
+            'crafts' => Craft::count(),
+            'sites' => Site::count(),
         ],
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -53,6 +63,8 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::resource('artists', ArtistController::class)->except('show')->middleware('role:admin');
     Route::resource('locations', LocationController::class)->only(['index', 'store', 'update', 'destroy'])->middleware('role:admin');
     Route::resource('cultural-items', CulturalItemController::class)->except('show')->middleware('role:admin');
+    Route::resource('crafts', CraftController::class)->except('show')->middleware('role:admin');
+    Route::resource('sites', SiteController::class)->except('show')->middleware('role:admin');
     Route::resource('users', UserController::class)->except('show')->middleware('role:admin');
     Route::patch('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status')->middleware('role:admin');
 });

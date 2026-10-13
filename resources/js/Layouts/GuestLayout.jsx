@@ -11,10 +11,10 @@ export default function GuestLayout({ children }) {
                 <Link href="/" className="flex items-center gap-3">
                     <ApplicationLogo alt={t('maqamatName')} className="h-20 w-20 shrink-0" />
                     <span>
-                        <span className={`block text-2xl font-bold tracking-[0.02em] text-[#2e3c8f] ${locale === 'ar' ? 'font-arabic-title' : 'font-latin-title'}`}>
+                        <span className={`block text-2xl font-bold tracking-[0.02em] text-[#4a2e1e] ${locale === 'ar' ? 'font-arabic-title' : 'font-latin-title'}`}>
                             {t('maqamatName')}
                         </span>
-                        <span className="maqamat-subtitle block text-[10px] tracking-[0.04em] text-[#4a5670]">
+                        <span className="maqamat-subtitle block text-xs tracking-[0.04em] text-[#18293b]">
                             {t('maqamatSubtitle')}
                         </span>
                     </span>

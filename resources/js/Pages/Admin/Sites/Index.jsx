@@ -1,0 +1,16 @@
+import AdminLayout from '@/Layouts/AdminLayout';
+import { Head, Link, router } from '@inertiajs/react';
+import { useState } from 'react';
+import { useLanguage } from '@/i18n';
+
+export default function Index({ items, filters }) {
+    const { locale, t } = useLanguage();
+    const name = value => value?.[locale] || value?.en || value?.fr || value?.ar || t('none');
+    const [search, setSearch] = useState(filters.search || '');
+    const submit = event => { event.preventDefault(); router.get(route('admin.sites.index'), { search }, { preserveState: true, replace: true }); };
+    return <AdminLayout header={<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-xs font-semibold uppercase tracking-[.18em] text-[#747A3C]">{t('heritageArchive')}</p><h1 className="font-serif text-3xl font-bold">Sites</h1><p className="mt-1 text-sm text-[#44301D]/60">{items.total} sites</p></div><Link href={route('admin.sites.create')} className="self-start rounded-xl bg-[#49351F] px-4 py-2.5 text-sm font-semibold text-white">+ Add site</Link></div>}>
+        <Head title="Sites" /><form onSubmit={submit} className="mb-5 flex max-w-md gap-2"><input value={search} onChange={e => setSearch(e.target.value)} className="w-full rounded-xl border-[#9B7847]/35" placeholder="Name / URL"/><button className="rounded-xl bg-[#747A3C] px-4 text-sm font-semibold text-white">Search</button></form>
+        <div className="overflow-hidden rounded-2xl border border-[#9B7847]/25 bg-white shadow-sm"><div className="divide-y divide-[#9B7847]/15">{items.data.map(item => <article key={item.id} className="flex items-center gap-4 p-4 hover:bg-[#EED9AE]/15"><div className="h-16 w-20 shrink-0 overflow-hidden rounded-xl bg-[#EED9AE]"><img src={`/storage/${item.main_image}`} className="h-full w-full object-cover"/></div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h2 className="truncate font-serif text-lg font-bold">{name(item.name)}</h2><span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${item.is_active ? 'bg-[#747A3C]/15 text-[#59602e]' : 'bg-gray-100 text-gray-500'}`}>{item.is_active ? 'Active' : 'Disabled'}</span>{item.is_unesco_certif && <span className="rounded-full bg-[#D5B66F]/50 px-2 py-0.5 text-[10px] font-bold uppercase">UNESCO</span>}</div><p className="mt-1 truncate text-xs text-[#44301D]/55">{item.city || '—'} · {name(item.location?.name) || '—'} · {item.events_count} events</p></div><div className="shrink-0"><Link href={route('admin.sites.edit', item.id)} className="mr-4 text-sm font-semibold text-[#747A3C]">{t('edit')}</Link><button onClick={() => window.confirm(`Delete “${name(item.name)}”?`) && router.delete(route('admin.sites.destroy', item.id))} className="text-sm font-semibold text-red-700">{t('delete')}</button></div></article>)}</div>{!items.data.length && <div className="py-16 text-center text-sm text-[#44301D]/55">{t('noRecords')}</div>}</div>
+        {items.links.length > 3 && <div className="mt-5 flex flex-wrap justify-center gap-1">{items.links.map((link, i) => <Link key={i} href={link.url || '#'} preserveScroll className={`rounded-lg px-3 py-2 text-xs ${link.active ? 'bg-[#49351F] text-white' : link.url ? 'bg-[#EED9AE]/45' : 'opacity-40'}`} dangerouslySetInnerHTML={{ __html: link.label }}/>)}</div>}
+    </AdminLayout>;
+}

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\CulturalItem;
 use App\Models\Category;
+use App\Models\Craft;
 use App\Models\Event;
+use App\Models\Site;
 use Inertia\Inertia;
 
 class MapController extends Controller
@@ -35,6 +37,22 @@ class MapController extends Controller
                 ];
             });
 
-        return Inertia::render('Client/Home', ['storedItems' => $items, 'storedEvents' => $events, 'storedCategories' => Category::all()->map(fn ($category) => [...$category->toArray(), 'icon_url' => $mediaUrl($category->icon)])]);
+        $sites = Site::with(['categories:id,name,icon,color', 'location:id,name'])
+            ->where('is_active', true)->get()->map(fn ($site) => [
+                ...$site->toArray(), 'kind' => 'site', 'main_image' => $mediaUrl($site->main_image),
+                'icon_url' => $mediaUrl($site->icon), 'pictures' => array_map($mediaUrl, $site->pictures ?? []),
+                'videos' => array_map($mediaUrl, $site->videos ?? []), 'state' => $site->location?->name['en'] ?? null,
+            ]);
+
+        $crafts = Craft::with(['categories:id,name,icon,color', 'types:id,name,icon', 'location:id,name'])
+            ->where('is_active', true)->get()->map(fn ($craft) => [
+                ...$craft->toArray(), 'kind' => 'cultural', 'craft' => true,
+                'main_image' => $mediaUrl($craft->main_image), 'icon_url' => $mediaUrl($craft->icon),
+                'pictures' => array_map($mediaUrl, $craft->pictures ?? []), 'videos' => array_map($mediaUrl, $craft->videos ?? []),
+                'products' => collect($craft->products ?? [])->map(fn ($product) => [...$product, 'image' => $mediaUrl($product['image'] ?? null)])->values()->all(),
+                'state' => $craft->location?->name['en'] ?? null,
+            ]);
+
+        return Inertia::render('Client/Home', ['storedItems' => $items, 'storedEvents' => $events, 'storedSites' => $sites, 'storedCrafts' => $crafts, 'storedCategories' => Category::all()->map(fn ($category) => [...$category->toArray(), 'icon_url' => $mediaUrl($category->icon)])]);
     }
 }

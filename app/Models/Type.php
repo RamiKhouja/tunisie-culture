@@ -21,4 +21,9 @@ class Type extends Model
     {
         return $this->belongsToMany(CulturalItem::class);
     }
+
+    public function crafts(): BelongsToMany
+    {
+        return $this->belongsToMany(Craft::class);
+    }
 }

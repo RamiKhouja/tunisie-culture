@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class CulturalItem extends Model
 {
-    protected $fillable = ['name', 'short_description', 'url', 'description', 'main_image', 'icon', 'pictures', 'videos', 'audio', 'x_position', 'y_position', 'latitude', 'longitude', 'google_maps_url', 'author_id', 'people', 'location_id', 'city', 'is_active', 'release', 'importance'];
+    protected $fillable = ['name', 'short_description', 'url', 'description', 'main_image', 'icon', 'pictures', 'videos', 'audio', 'x_position', 'y_position', 'latitude', 'longitude', 'google_maps_url', 'author_id', 'people', 'location_id', 'city', 'is_active', 'is_tangible', 'release', 'importance'];
 
-    protected $casts = ['name' => 'array', 'short_description' => 'array', 'description' => 'array', 'pictures' => 'array', 'videos' => 'array', 'audio' => 'array', 'people' => 'array', 'is_active' => 'boolean', 'latitude' => 'float', 'longitude' => 'float', 'x_position' => 'float', 'y_position' => 'float'];
+    protected $casts = ['name' => 'array', 'short_description' => 'array', 'description' => 'array', 'pictures' => 'array', 'videos' => 'array', 'audio' => 'array', 'people' => 'array', 'is_active' => 'boolean', 'is_tangible' => 'boolean', 'latitude' => 'float', 'longitude' => 'float', 'x_position' => 'float', 'y_position' => 'float'];
 
     public function categories(): BelongsToMany
     {

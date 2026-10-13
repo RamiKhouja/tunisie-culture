@@ -9,13 +9,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Event extends Model
 {
-    protected $fillable = ['name', 'main_image', 'organization_id', 'tags', 'is_free', 'price', 'payment_link', 'short_description', 'description', 'latitude', 'longitude', 'google_maps_url', 'state_id', 'city', 'place_name', 'pictures', 'videos', 'facebook', 'instagram', 'tiktok', 'linkedin', 'youtube', 'website', 'other_link'];
+    protected $fillable = ['name', 'main_image', 'organization_id', 'site_id', 'tags', 'is_free', 'price', 'payment_link', 'short_description', 'description', 'latitude', 'longitude', 'google_maps_url', 'state_id', 'city', 'place_name', 'pictures', 'videos', 'facebook', 'instagram', 'tiktok', 'linkedin', 'youtube', 'website', 'other_link'];
 
     protected $casts = ['name' => 'array', 'short_description' => 'array', 'description' => 'array', 'tags' => 'array', 'pictures' => 'array', 'videos' => 'array', 'is_free' => 'boolean', 'price' => 'float', 'latitude' => 'float', 'longitude' => 'float'];
 
     public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    public function site(): BelongsTo
+    {
+        return $this->belongsTo(Site::class);
     }
 
     public function state(): BelongsTo

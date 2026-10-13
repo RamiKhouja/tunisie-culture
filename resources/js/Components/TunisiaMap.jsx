@@ -78,18 +78,53 @@ function extendBounds(boundsObject, coordinates) {
     coordinates.forEach((part) => extendBounds(boundsObject, part));
 }
 
-export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyItems, onSelectCategory, onSelectItem, point, onChoosePoint, showNames = true, showPlacesNames = true, mapMode = 'vector', selectedState = '' }) {
+class ResetMapControl {
+    constructor(onReset) {
+        this.onReset = onReset;
+    }
+
+    onAdd(map) {
+        this.map = map;
+        this.container = document.createElement('div');
+        this.container.className = 'maplibregl-ctrl maplibregl-ctrl-group map-reset-control';
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.title = 'Reset map';
+        button.setAttribute('aria-label', 'Reset map');
+        button.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 4 9l5 5"/><path d="M4 9h9a6 6 0 0 1 0 12h-2"/></svg>';
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            this.onReset();
+        });
+        this.container.appendChild(button);
+        return this.container;
+    }
+
+    onRemove() {
+        this.container?.remove();
+        this.map = undefined;
+    }
+
+    setVisible(visible) {
+        if (this.container) this.container.hidden = !visible;
+    }
+}
+
+export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyItems, onSelectCategory, onSelectItem, point, onChoosePoint, onSelectState, onResetMap, hasActiveFilter = false, showNames = true, showPlacesNames = true, mapMode = 'vector', selectedState = '' }) {
     const { locale, dir, t } = useLanguage();
     const container = useRef(null);
     const mapRef = useRef(null);
+    const resetControlRef = useRef(null);
     const governoratesRef = useRef(null);
-    const callbacks = useRef({ onSelectItem, onChoosePoint, onSelectCategory });
-    callbacks.current = { onSelectItem, onChoosePoint, onSelectCategory };
+    const callbacks = useRef({ onSelectItem, onChoosePoint, onSelectCategory, onSelectState, onResetMap });
+    callbacks.current = { onSelectItem, onChoosePoint, onSelectCategory, onSelectState, onResetMap };
     const [ready, setReady] = useState(false);
     const [error, setError] = useState('');
     const [region, setRegion] = useState('');
     const [governoratesLoaded, setGovernoratesLoaded] = useState(false);
     const [decorOpacity, setDecorOpacity] = useState(1);
+    const [mapZoomed, setMapZoomed] = useState(false);
 
     useEffect(() => {
         let map;
@@ -111,6 +146,12 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
         map.touchZoomRotate.disableRotation();
         map.keyboard.disableRotation();
         mapRef.current = map;
+        let pendingStateClick;
+        const resetControl = new ResetMapControl(() => {
+            callbacks.current.onResetMap?.();
+            map.fitBounds(bounds, { padding: 35, duration: 500 });
+        });
+        resetControlRef.current = resetControl;
 
         // MapLibre prevents the browser's default touch scrolling while a
         // one-finger pan is active. At a vertical map bound there is no more
@@ -168,6 +209,7 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
         };
         map.on('zoom', updateDecorOpacity);
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+        map.addControl(resetControl, 'top-right');
         map.addControl(new maplibregl.ScaleControl(), 'bottom-left');
         map.addControl(new maplibregl.AttributionControl({ compact: true, customAttribution: 'OpenStreetMap' }), 'bottom-right');
         // MapLibre initializes compact attribution expanded; collapse it once per map mount.
@@ -176,6 +218,8 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
             attribution.classList.remove('maplibregl-compact-show');
             attribution.removeAttribute('open');
         }
+        const updateMapZoom = () => setMapZoomed(map.getZoom() > initialZoom + 0.01);
+        map.on('zoomend', updateMapZoom);
         map.on('load', () => {
             map.setPaintProperty('governorates-fill', 'fill-opacity', 1);
             map.setPaintProperty('governorates-fill', 'fill-color', '#9CAF78');
@@ -206,27 +250,47 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
         map.on('error', () => setError('Map data could not load. Please reload to try again.'));
         map.on('mousemove', 'governorates-fill', (event) => {
             setRegion(event.features[0]?.properties.name || '');
-            map.getCanvas().style.cursor = callbacks.current.onChoosePoint ? 'crosshair' : 'grab';
+            map.getCanvas().style.cursor = callbacks.current.onSelectState ? 'pointer' : callbacks.current.onChoosePoint ? 'crosshair' : 'grab';
         });
         map.on('mouseleave', 'governorates-fill', () => setRegion(''));
         map.on('click', 'governorates-fill', (event) => {
+            const state = event.features[0]?.properties.name;
+            if (callbacks.current.onSelectState && state) {
+                window.clearTimeout(pendingStateClick);
+                pendingStateClick = window.setTimeout(() => {
+                    callbacks.current.onSelectState(state);
+                    pendingStateClick = undefined;
+                }, 250);
+                return;
+            }
             callbacks.current.onChoosePoint?.({ longitude: Number(event.lngLat.lng.toFixed(6)), latitude: Number(event.lngLat.lat.toFixed(6)) });
+        });
+        map.on('dblclick', 'governorates-fill', () => {
+            window.clearTimeout(pendingStateClick);
+            pendingStateClick = undefined;
         });
         const observer = new ResizeObserver(() => map.resize());
         observer.observe(container.current);
         return () => {
             cancelled = true;
             setReady(false);
+            window.clearTimeout(pendingStateClick);
             map.off('zoom', updateDecorOpacity);
+            map.off('zoomend', updateMapZoom);
             observer.disconnect();
             mapContainer.removeEventListener('touchstart', onTouchStart, { capture: true });
             mapContainer.removeEventListener('touchmove', onTouchMove, { capture: true });
             mapContainer.removeEventListener('touchend', onTouchEnd, { capture: true });
             mapContainer.removeEventListener('touchcancel', onTouchEnd, { capture: true });
             map.remove();
+            resetControlRef.current = null;
             if (mapRef.current === map) mapRef.current = null;
         };
     }, [locale]);
+
+    useEffect(() => {
+        resetControlRef.current?.setVisible(hasActiveFilter || mapZoomed);
+    }, [hasActiveFilter, mapZoomed, ready]);
 
     useEffect(() => {
         fetch('/maps/tunisia-governorates.geojson')
@@ -287,14 +351,15 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
                 const members = cluster.items;
                 const item = members[0];
                 const grouped = members.length > 1;
-                const isCulturalPoint = !grouped && item.kind !== 'event';
+                const isCulturalPoint = !grouped && item.kind === 'cultural';
+                const isSitePoint = !grouped && item.kind === 'site';
                 const groupedEvents = grouped && members.every(member => member.kind === 'event');
                 const color = item.categories?.[0]?.color || '#8f3527';
                 const colors = [...new Set(members.map(member => member.categories?.[0]?.color || '#8f3527'))];
                 const button = document.createElement('button');
                 button.type = 'button';
-                button.className = `map-point${grouped ? ' map-cluster' : ''}${groupedEvents ? ' map-event-cluster' : ''}${isCulturalPoint ? ' map-cultural-point' : ''}${members.some(member => member.kind === 'event' && member.glow) ? ' map-point-glow' : ''}`;
-                const size = grouped ? Math.min(80, 30 + Math.sqrt(members.length) * 5) : (isCulturalPoint ? 22 : 15);
+                button.className = `map-point${grouped ? ' map-cluster' : ''}${groupedEvents ? ' map-event-cluster' : ''}${isCulturalPoint ? ' map-cultural-point' : ''}${isSitePoint ? ' map-site-point' : ''}${members.some(member => member.kind === 'event' && member.glow) ? ' map-point-glow' : ''}`;
+                const size = grouped ? Math.min(80, 30 + Math.sqrt(members.length) * 5) : (isCulturalPoint || isSitePoint ? 22 : 15);
                 button.style.width = `${size}px`;
                 button.style.height = `${size}px`;
                 button.style.setProperty('--point-color', color);
@@ -307,7 +372,9 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
                 }
                 const name = item.name?.en || item.name?.fr || item.name?.ar || 'Item';
                 const eventCount = members.filter(member => member.kind === 'event').length;
-                const title = grouped ? `${members.length} items: ${eventCount} events, ${members.length - eventCount} cultural items. Click to explore.` : name;
+                const siteCount = members.filter(member => member.kind === 'site').length;
+                const culturalCount = members.filter(member => member.kind === 'cultural').length;
+                const title = grouped ? `${members.length} items: ${eventCount} events, ${culturalCount} cultural items, ${siteCount} sites. Click to explore.` : name;
                 button.title = title;
                 button.setAttribute('aria-label', title);
                 if (grouped) {
@@ -413,8 +480,8 @@ export default function TunisiaMap({ items = emptyItems, categoryGroups = emptyI
         <div className="map-zoom-fade" style={{ opacity: decorOpacity }} aria-hidden="true">
             <SeaWaves mapRef={mapRef} ready={ready} />
             <div className="map-label map-label-sea">{label.sea}</div>
-            <div className="map-label map-label-algeria">{label.algeria}</div>
-            <div className="map-label map-label-libya">{label.libya}</div>
+            {/* <div className="map-label map-label-algeria">{label.algeria}</div>
+            <div className="map-label map-label-libya">{label.libya}</div> */}
             <MapIllustrations />
             <img className="map-compass" src="/storage/images/compass-rose.svg" alt="" />
         </div>

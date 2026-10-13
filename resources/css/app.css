@@ -17,7 +17,7 @@
     .font-arabic-body { font-family: 'Cairo', sans-serif; }
     .font-arabic-admin { font-family: 'Amiri', serif; }
     .font-latin-title { font-family: 'Cormorant Garamond', serif; }
-    .font-latin-body { font-family: 'Roboto', sans-serif; }
+    .font-latin-body { font-family: 'Cormorant Garamond', serif; }
 }
 
 .filter-arabic,
@@ -36,7 +36,7 @@
 }
 
 .nav-arabic .maqamat-name { font-size: 36px; }
-.nav-arabic .maqamat-subtitle { font-size: 13px; }
+.nav-arabic .maqamat-subtitle { font-size: 16px; }
 .nav-arabic nav a { font-size: 20px; font-weight: 400; }
 .nav-arabic nav a.nav-active { font-weight: 600; }
 .nav-arabic .nav-language-control,
@@ -69,6 +69,17 @@
     background: #e7d6cc;
     color: #49351f;
     box-shadow: 0 8px 18px rgba(73, 53, 31, .08);
+}
+
+@media (min-width: 1024px) {
+    .desktop-discovery-column {
+        width: calc((100% - 1.5rem) * 2 / 3);
+        margin-left: calc((100% + 3rem) / 3);
+    }
+    .desktop-discovery-column-ar {
+        width: calc((100% - 1.5rem) * 2 / 3);
+        margin-right: calc((100% + 3rem) / 3);
+    }
 }
 
 .filter-top-border {
@@ -165,7 +176,8 @@
 .mobile-filters.filter-arabic .content-filter-tab { font-size: 0.9rem; }
 
 .content-filter-tabs {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: .25rem;
     margin-top: 1.5rem;
     padding: .25rem;
@@ -181,20 +193,29 @@
     padding: .7rem .55rem;
     color: #18293b;
     font-size: .875rem;
-    font-weight: 400;
+    font-weight: 500;
     transition: background-color .15s ease, color .15s ease;
 }
 
-.content-filter-tab:hover,
+.content-filter-tab:hover {
+    background: #ad502846;
+    color: #18293b;
+    font-weight: 700;
+}
 .content-filter-tab.is-active {
     background: #ad4f28;
     color: #fff8ed;
-    font-weight: 700;
+    font-weight: 600;
 }
 
 .content-filter-tab:focus-visible {
     outline: 2px solid #49351f;
     outline-offset: 2px;
+}
+
+.content-filter-tab.is-placeholder {
+    cursor: not-allowed;
+    opacity: .6;
 }
 
 .map-paper-edge {
@@ -270,6 +291,8 @@
 .map-point { border: 2px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 1px 5px #0005; display: grid; place-items: center; }
 .map-point:focus-visible { outline: 3px solid #49351f; outline-offset: 4px; }
 .map-cultural-point { position: relative; isolation: isolate; border: 0; background-color: transparent !important; box-shadow: none; opacity: 1; }
+.map-site-point { position: relative; isolation: isolate; border: 0; border-radius: 0; background-color: #fff !important; background-image: url('/pictures/octagon-outline.svg'); background-position: center; background-repeat: no-repeat; background-size: 100% 100%; clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%); box-shadow: 0 1px 5px #0005; }
+.map-site-point::before { content: ''; position: absolute; inset: 2px; background: var(--point-color, #54705a); clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%); pointer-events: none; }
 .map-cultural-point::before, .category-map-point::before { content: ''; position: absolute; z-index: 0; inset: 11.5%; border-radius: 50%; background: var(--point-color); pointer-events: none; }
 .map-cultural-point::after, .category-map-point::after { content: ''; position: absolute; z-index: 1; inset: 0; background: url('/storage/images/badge-cultural-item.svg') center / 100% 100% no-repeat; pointer-events: none; }
 .map-cluster { opacity: .7; border-color: #ffffff77; color: white; font-weight: 700; font-size: 15px; }
@@ -316,6 +339,9 @@
 .maqamat-map .maplibregl-canvas { background: transparent !important; }
 .maqamat-map .maplibregl-ctrl-group { overflow: hidden; border: 1px solid #b48a66; border-radius: 10px; background: #f6eddc; box-shadow: 0 2px 8px rgba(43,29,16,.18); }
 .maqamat-map .maplibregl-ctrl-group button { width: 2.55rem; height: 2.55rem; color: #1e2a3a; background: #f6eddc; }
+.maqamat-map .map-reset-control { margin-top: 0.45rem; }
+.maqamat-map .map-reset-control button { display: grid; place-items: center; }
+.maqamat-map .map-reset-control svg { width: 1.15rem; height: 1.15rem; }
 .maqamat-map .maplibregl-ctrl-attrib { display: none; }
 .map-paper-edge { clip-path: none !important; border: 0; border-radius: 0; background: #eadbc0; box-shadow: none; }
 .map-paper-content { position: absolute; z-index: 1; inset: 32px; overflow: hidden; }
@@ -328,10 +354,10 @@
 .map-border-right { right: 0; }
 .map-zoom-fade { position: absolute; inset: 0; z-index: 4; pointer-events: none; transition: opacity .18s ease-out; }
 .map-sea-waves { position: absolute; inset: 0; z-index: 2; display: block; width: 100%; height: 100%; pointer-events: none; }
-.map-label { position: absolute; z-index: 4; pointer-events: none; font-family: 'Cormorant Garamond', serif; font-size: clamp(1.5rem, 3vw, 3rem); font-style: italic; color: #43557f; text-shadow: 0 1px #f3e5c8, 1px 0 #f3e5c8; }
+.map-label { position: absolute; z-index: 4; pointer-events: none; font-family: 'Cormorant Garamond', serif; font-size: clamp(1.3rem, 2.6vw, 2.6rem); font-style: italic; color: #43557f; text-shadow: 0 1px #f3e5c8, 1px 0 #f3e5c8; }
 .maqamat-map:not(.maqamat-map-ar) .map-label { font-size: clamp(1rem, 2vw, 2rem); }
 .maqamat-map-ar .map-label { font-family: 'Bouazzi Maghribi', serif; font-style: normal; direction: rtl; }
-.map-label-sea { top: calc(25% - 8px); right: 5%; color: #f7ead0; text-shadow: 0 1px #2e3c8f, 1px 0 #2e3c8f; }
+.map-label-sea { top: calc(25% - 8px); right: 3%; color: #f7ead0; text-shadow: 0 1px #2e3c8f, 1px 0 #2e3c8f; }
 .map-label-algeria { left: 15%; top: 58%; }
 .map-label-libya { right: 24%; bottom: 13%; }
 .map-illustrations { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
@@ -341,11 +367,18 @@
 .map-cloud-three { top: 54%; right: 18%; width: clamp(6rem, 13vw, 11rem); }
 .map-bird-flight { position: absolute; z-index: 5; top: 16%; right: -10%; width: clamp(4rem, 8vw, 7rem); height: auto; opacity: 0; animation: maqamat-bird-flight 60s linear infinite; }
 .map-bird-flight-top { top: 3%; }
-.map-bird-flight-middle { animation-delay: 20s; }
+.map-bird-flight-middle { animation-name: maqamat-bird-flight-middle; animation-delay: 20s; }
 @keyframes maqamat-bird-flight {
     0% { opacity: 0; transform: translateX(0); }
     10% { opacity: 1; }
     76% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(-115vw); }
+}
+@keyframes maqamat-bird-flight-middle {
+    0% { opacity: 1; transform: translateX(0); }
+    10% { opacity: 1; }
+    18% { opacity: 1; }
+    24% { opacity: 0; transform: translateX(-28vw); }
     100% { opacity: 0; transform: translateX(-115vw); }
 }
 .map-boat { position: absolute; top: 15%; right: 18%; width: clamp(3.35rem, 8vw, 6.7rem); height: auto; opacity: 1; filter: drop-shadow(0 4px 2px rgba(43,29,16,.35)); animation: maqamat-boat 12s ease-in-out infinite; }
@@ -357,13 +390,15 @@
 .map-zoom-controls button:hover { background: #eadcc0; }
 .maqamat-tree { position: absolute; z-index: 15; pointer-events: none; background-repeat: no-repeat; background-size: contain; }
 .map-evergreen-frame { position: absolute; z-index: 40; top: -1.7rem; left: -1.5rem; width: 5.5rem; height: 15rem; object-fit: contain; pointer-events: none; }
-.map-olive-frame { position: absolute; z-index: 40; right: -2rem; bottom: 0.4rem; width: 13rem; height: 13rem; object-fit: contain; pointer-events: none; }
+.map-olive-frame { position: absolute; z-index: 40; right: 3rem; bottom: 2rem; width: 13rem; height: 13rem; object-fit: contain; pointer-events: none; }
 .map-key-place,.map-key-cluster { display: grid; place-items: center; width: 1.45rem; height: 1.45rem; border-radius: 50%; color: white; background: #8a5a3a; font-size: .72rem; }
 .map-key-cultural { position: relative; isolation: isolate; display: grid; place-items: center; width: 1.8rem; height: 1.8rem; color: #4a2e1e; background: transparent; font-size: .82rem; }
 .map-key-cultural::before { content: ''; position: absolute; z-index: 0; inset: 11.5%; border-radius: 50%; background: transparent; }
 .map-key-cultural::after { content: ''; position: absolute; z-index: 1; inset: 0; background: #4a2e1e; -webkit-mask: url('/storage/images/badge-cultural-item.svg') center / 100% 100% no-repeat; mask: url('/storage/images/badge-cultural-item.svg') center / 100% 100% no-repeat; pointer-events: none; }
 .map-key-cultural span { position: relative; z-index: 2; color: #4a2e1e; }
 .map-key-event { width: .72rem; height: .72rem; border-radius: 50%; background: #c98b3a; box-shadow: 0 0 0 3px #f0d9a9, 0 0 0 5px rgba(201,139,58,.35); animation: map-key-event-twinkle 2.2s ease-in-out infinite; }
+.map-key-site { position: relative; width: 1.05rem; height: 1.05rem; border: 0; background-color: #fff; background-image: url('/pictures/octagon-outline.svg'); background-position: center; background-repeat: no-repeat; background-size: 100% 100%; clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%); box-shadow: 0 1px 3px #0005; }
+.map-key-site::before { content: ''; position: absolute; inset: 1px; background: #54705a; clip-path: polygon(50% 0%, 85% 15%, 100% 50%, 85% 85%, 50% 100%, 15% 85%, 0% 50%, 15% 15%); pointer-events: none; }
 @keyframes map-key-event-twinkle { 0%, 100% { opacity: .7; scale: .92; box-shadow: 0 0 0 3px #f0d9a9, 0 0 0 5px rgba(201,139,58,.25); } 50% { opacity: 1; scale: 1.12; box-shadow: 0 0 0 3px #f0d9a9, 0 0 0 7px rgba(201,139,58,.5); } }
 .map-key-cluster { background: #4a2e1e; }
 @media (max-width: 1023px) { .maqamat-header { height: 6.5rem; } .maqamat-header-ornament { display: block; top: 4.6rem; height: 1.9rem; background-size: auto 1.9rem; } .map-paper-content { inset: 18px; } .map-border-top,.map-border-bottom { height: 18px; background-size: auto 18px; } .map-border-left,.map-border-right { width: 18px; background-size: 18px auto; } .map-label-sea,.map-label-algeria,.map-label-libya,.map-cloud-two,.map-cloud-three { display: none; } .map-compass { top: auto; right: calc(2% - 8px); bottom: calc(2% - 16px); } .map-boat { top: 23%; right: 1%; } .map-evergreen-frame,.map-olive-frame { display: none; } }

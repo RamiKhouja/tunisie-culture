@@ -6,7 +6,7 @@
         <link rel="icon" type="image/svg+xml" href="/pictures/maqamat-logo.svg">
         <link rel="apple-touch-icon" href="/pictures/maqamat-logo.svg">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        <title inertia>{{ config('app.name', 'Maqamat Tunisia') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

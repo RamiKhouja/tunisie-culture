@@ -19,11 +19,11 @@ export default function ClientLayout({ children }) {
         <div dir={dir} className={`min-h-screen overflow-x-clip bg-[#f3e5c8] pt-[6.5rem] md:pt-[8.125rem] text-[#1e2a3a] ${locale === 'ar' ? 'font-arabic-body' : 'font-latin-body'}`}>
             <header className={`maqamat-header fixed inset-x-0 top-0 z-50 border-b border-[#b88a6b]/35 bg-[#e7d6cc] ${locale === 'ar' ? 'nav-arabic' : ''}`}>
                 <div className="relative mx-auto flex h-[5.125rem] w-full items-center justify-between px-5 sm:px-8 lg:px-8">
-                    <Link href="/" className="group maqamat-brand flex items-center gap-3" aria-label="Maqamat Tunisia home">
+                    <Link href="/" className="group maqamat-brand flex items-center gap-3" aria-label={`${t('maqamatName')} home`}>
                         <img src="/pictures/maqamat-logo.svg" alt="" className="size-11 shrink-0" />
                         <span>
-                            <span className={`maqamat-name block text-2xl font-bold tracking-[0.02em] text-[#2e3c8f] ${locale === 'ar' ? 'font-arabic-title' : 'font-latin-title'}`}>{locale === 'ar' ? 'مقامات تونس' : 'Maqamat Tunisia'}</span>
-                            <span className="maqamat-subtitle block text-[9px] tracking-[0.05em] text-[#4a5670]">{locale === 'ar' ? 'خارطة تونس الثقافية' : 'Cultural Map of Tunisia'}</span>
+                            <span className={`maqamat-name block text-2xl font-bold tracking-[0.02em] text-[#4a2e1e] ${locale === 'ar' ? 'font-arabic-title' : 'font-latin-title'}`}>{t('maqamatName')}</span>
+                            <span className="maqamat-subtitle block text-xs leading-6 tracking-[0.1em] text-[#18293b]">{t('maqamatSubtitle')}</span>
                         </span>
                     </Link>
 

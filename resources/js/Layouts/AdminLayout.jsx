@@ -24,6 +24,8 @@ const Icon = ({ name, className = 'h-5 w-5' }) => {
 const navigation = [
     { key: 'overview', icon: 'dashboard', href: 'dashboard' },
     { key: 'culturalItems', icon: 'collection', href: 'admin.cultural-items.index' },
+    { key: 'crafts', icon: 'collection', href: 'admin.crafts.index' },
+    { key: 'sites', icon: 'map', href: 'admin.sites.index' },
     { key: 'organizations', icon: 'users', href: 'admin.organizations.index' },
     { key: 'users', icon: 'users', href: 'admin.users.index' },
     { key: 'events', icon: 'collection', href: 'admin.events.index' },
@@ -79,7 +81,7 @@ export default function AdminLayout({ header, children }) {
     );
 
     return (
-        <div dir={dir} className={`min-h-screen bg-white text-[#44301D] ${locale === 'ar' ? 'font-arabic-admin' : ''}`}>
+        <div dir={dir} className={`min-h-screen bg-white text-[#44301D] ${locale === 'ar' ? 'font-arabic-admin' : 'font-latin-body'}`}>
             <aside className={`fixed inset-y-0 z-30 hidden transition-[width] duration-300 lg:block ${dir === 'rtl' ? 'right-0' : 'left-0'} ${collapsed ? 'w-20' : 'w-64'}`}>{sidebar}</aside>
 
             {drawerOpen && <button className="fixed inset-0 z-40 bg-[#44301D]/55 backdrop-blur-sm lg:hidden" onClick={() => setDrawerOpen(false)} aria-label="Close navigation" />}

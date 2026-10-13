@@ -37,4 +37,14 @@ class Category extends Model
     {
         return $this->belongsToMany(CulturalItem::class);
     }
+
+    public function sites(): BelongsToMany
+    {
+        return $this->belongsToMany(Site::class);
+    }
+
+    public function crafts(): BelongsToMany
+    {
+        return $this->belongsToMany(Craft::class);
+    }
 }

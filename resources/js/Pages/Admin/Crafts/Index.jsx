@@ -1,0 +1,16 @@
+import AdminLayout from '@/Layouts/AdminLayout';
+import { Head, Link, router } from '@inertiajs/react';
+import { nameOf } from '@/Components/Admin/EntityFields';
+import { useLanguage } from '@/i18n';
+import { useState } from 'react';
+
+export default function Index({ items, filters }) {
+    const { locale, t, dir } = useLanguage();
+    const [search, setSearch] = useState(filters.search || '');
+    const submit = event => { event.preventDefault(); router.get(route('admin.crafts.index'), { search }, { preserveState: true, replace: true }); };
+    return <AdminLayout header={<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end"><div><p className="text-xs font-semibold uppercase tracking-[.18em] text-[#747A3C]">{t('heritageArchive')}</p><h1 className="font-serif text-3xl font-bold">{t('crafts')}</h1><p className="mt-1 text-sm text-[#44301D]/60">{items.total} {t('crafts').toLowerCase()}</p></div><Link href={route('admin.crafts.create')} className="self-start rounded-xl bg-[#49351F] px-4 py-2.5 text-sm font-semibold text-white">+ {t('addNewCraft')}</Link></div>}>
+        <Head title={t('crafts')} /><form onSubmit={submit} className="mb-5 flex max-w-md gap-2"><input value={search} onChange={event => setSearch(event.target.value)} className="w-full rounded-xl border-[#9B7847]/35" placeholder={`${t('name')} / ${t('url')}`} /><button className="rounded-xl bg-[#747A3C] px-4 text-sm font-semibold text-white">{t('searchArchive').split(' ')[0]}</button></form>
+        <div className="overflow-hidden rounded-2xl border border-[#9B7847]/25 bg-white shadow-sm"><div className="divide-y divide-[#9B7847]/15">{items.data.map(item => <article key={item.id} className="flex items-center gap-4 p-4"><div className="h-16 w-20 shrink-0 overflow-hidden rounded-xl bg-[#EED9AE]">{item.main_image && <img src={`/storage/${item.main_image}`} className="h-full w-full object-cover" />}</div><div className="min-w-0 flex-1"><div className="flex flex-wrap items-center gap-2"><h2 className="truncate font-serif text-lg font-bold">{nameOf(item.name, locale)}</h2><span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${item.is_active ? 'bg-[#747A3C]/15 text-[#59602e]' : 'bg-gray-100 text-gray-500'}`}>{item.is_active ? t('active') : t('disabled')}</span></div><p className="mt-1 truncate text-xs text-[#44301D]/55">{item.owner} · {item.city || t('noCity')} · {nameOf(item.location?.name, locale) || t('noState')}</p></div><div className="shrink-0"><Link href={route('admin.crafts.edit', item.id)} className="mr-4 text-sm font-semibold text-[#747A3C]">{t('edit')}</Link><button onClick={() => window.confirm(`${t('delete')} “${nameOf(item.name, locale)}”?`) && router.delete(route('admin.crafts.destroy', item.id))} className="text-sm font-semibold text-red-700">{t('delete')}</button></div></article>)}</div>{!items.data.length && <div className="py-16 text-center text-sm text-[#44301D]/55">{t('noRecords')}</div>}</div>
+        <div className="mt-4 flex gap-2">{items.links.map((link, index) => link.url ? <Link key={index} href={link.url} className={`rounded border px-3 py-2 ${link.active ? 'bg-stone-200' : ''}`} dangerouslySetInnerHTML={{ __html: link.label }} /> : null)}</div>
+    </AdminLayout>;
+}

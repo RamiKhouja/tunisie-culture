@@ -9,12 +9,12 @@ import { useLanguage } from '@/i18n';
 
 const translations = value => typeof value === 'object' && value !== null ? value : { en: value || '', fr: '', ar: '' };
 
-export default function Form({ item, organizations, categories, locations }) {
+export default function Form({ item, organizations, categories, locations, sites = [] }) {
     const { auth } = usePage().props;
     const { locale, t } = useLanguage();
     const organizationLocked = auth.user.role === 'organizer';
     const { data, setData, post, errors, processing, transform } = useForm({
-        name: item?.name || { en: '', fr: '', ar: '' }, main_image: null, organization_id: item?.organization_id ?? (organizations.length === 1 ? organizations[0].id : ''),
+        name: item?.name || { en: '', fr: '', ar: '' }, main_image: null, organization_id: item?.organization_id ?? (organizations.length === 1 ? organizations[0].id : ''), site_id: item?.site_id ?? '',
         google_maps_url: item?.google_maps_url ?? '', ...Object.fromEntries(['payment_link', 'latitude', 'longitude', 'state_id', 'city', 'place_name', ...links, 'other_link'].map(key => [key, item?.[key] ?? ''])), short_description: translations(item?.short_description), description: translations(item?.description),
         is_free: item?.is_free ?? true, price: item?.price ?? 0, category_ids: item?.categories?.map(c => String(c.id)) || [], tags_text: (item?.tags || []).join(', '),
         event_dates: item?.event_dates?.map(slot => ({ date: slot.date.slice(0, 10), start_at: slot.start_at.slice(0, 5), end_at: slot.end_at.slice(0, 5) })) || [{ date: '', start_at: '', end_at: '' }],
@@ -26,7 +26,7 @@ export default function Form({ item, organizations, categories, locations }) {
     return <AdminLayout header={<h1 className="font-serif text-3xl font-bold">{title}</h1>}><Head title={title}/>
         <form onSubmit={submit} className="mx-auto max-w-5xl space-y-6"><Errors errors={errors}/>
             <TranslatableFields field="name" label={t('name')} value={data.name} onChange={v => setData('name', v)} required/>
-            <div className="grid gap-5 sm:grid-cols-2"><Select label={t('organization')} value={data.organization_id} options={organizations} onChange={v => setData('organization_id', v)} disabled={organizationLocked}/><Upload label={t('mainImage')} current={item?.main_image} onChange={v => setData('main_image', v)}/></div>
+            <div className="grid gap-5 sm:grid-cols-3"><Select label={t('organization')} value={data.organization_id} options={organizations} onChange={v => setData('organization_id', v)} disabled={organizationLocked}/><Select label="Site (optional)" value={data.site_id} options={sites} onChange={v => setData('site_id', v)}/><Upload label={t('mainImage')} current={item?.main_image} onChange={v => setData('main_image', v)}/></div>
             {!organizations.length && <p className="text-amber-800">{t('organizations')} {t('none').toLowerCase()}. <Link className="underline" href={route('admin.organizations.create')}>{t('addNewOrganization')}</Link></p>}
             <fieldset className="rounded-xl border p-4"><legend className="font-semibold">{t('categoriesLabel')}</legend><div className="flex flex-wrap gap-4">{categories.map(category => <label key={category.id} className="flex items-center gap-2"><input type="checkbox" checked={data.category_ids.includes(String(category.id))} onChange={e => setData('category_ids', e.target.checked ? [...data.category_ids, String(category.id)] : data.category_ids.filter(id => id !== String(category.id)))}/><span className="size-3 rounded-full" style={{ backgroundColor: category.color }}/>{nameOf(category.name, locale)}</label>)}</div></fieldset>
             <Field label={t('tags')} value={data.tags_text} onChange={v => setData('tags_text', v)}/>

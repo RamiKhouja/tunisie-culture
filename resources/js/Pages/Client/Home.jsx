@@ -30,7 +30,7 @@ function ItemIcon({ type, className = 'size-5' }) {
 }
 
 function CulturalItemDetails({ item }) {
-    const { locale } = useLanguage();
+    const { locale, t } = useLanguage();
     const translated = name => localizedValue(name, locale);
     const [activeImage, setActiveImage] = useState(item.main_image || item.pictures?.[0]);
     const importanceStyle = { high: 'bg-[#9b3d2d] text-white', medium: 'bg-[#c58a38] text-white', low: 'bg-[#66724b] text-white' };
@@ -46,6 +46,7 @@ function CulturalItemDetails({ item }) {
             </div>
             <div className="p-6 sm:p-8">
                 <div className="mb-5 flex flex-wrap gap-2">
+                    {item.kind === 'site' && item.is_unesco_certif && <span className="rounded-full bg-[#54705a] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">UNESCO certified{item.unesco_certif_year ? ` · ${item.unesco_certif_year}` : ''}</span>}
                     <span className={`rounded-full px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${importanceStyle[item.importance]}`}>{item.importance} importance</span>
                     <span className="rounded-full border border-[#85633f]/30 px-3 py-1 text-[11px] font-bold uppercase tracking-wider">{item.release}</span>
                     <span className="rounded-full border border-[#85633f]/30 px-3 py-1 text-[11px] font-bold uppercase tracking-wider">{item.is_active ? 'Active' : 'Archived'}</span>
@@ -53,6 +54,9 @@ function CulturalItemDetails({ item }) {
                 {item.approximate_position && <p className="mb-3 text-xs text-[#80674c]">Approximate location of the site or town.</p>}
                 <p className="font-serif text-lg font-semibold leading-7 text-[#513823]">{translated(item.short_description)}</p>
                 <p className="mt-3 text-sm leading-6 text-[#6b5138]">{translated(item.description)}</p>
+                {item.craft && item.owner && <p className="mt-4 text-sm text-[#6b5138]"><strong>{t('owner')}:</strong> {item.owner}</p>}
+                {item.craft && item.products?.length > 0 && <section className="mt-6 border-t border-[#98754d]/25 pt-5"><h3 className="mb-3 font-serif text-xl font-bold">{t('products')}</h3><div className="grid gap-3 sm:grid-cols-2">{item.products.map((product, index) => <article key={`${product.image || 'product'}-${index}`} className="flex gap-3 rounded-xl border border-[#98754d]/25 bg-white/35 p-3">{product.image && <img src={product.image} alt="" className="size-20 shrink-0 rounded-lg object-cover" />}<div className="min-w-0"><h4 className="font-semibold">{translated(product.name)}</h4>{product.price !== null && product.price !== undefined && <p className="mt-1 text-sm text-[#80674c]">{Number(product.price).toFixed(3)} TND</p>}</div></article>)}</div></section>}
+                {item.kind === 'site' && (item.founded_by || item.foundation_year) && <p className="mt-4 text-sm text-[#6b5138]">{item.founded_by && <><strong>Founded by:</strong> {item.founded_by} </>}{item.foundation_year && <span>({item.foundation_year}{item.foundation_month ? `-${String(item.foundation_month).padStart(2, '0')}` : ''})</span>}</p>}
                 {item.author && <p className="mt-4 text-sm">Author: {translated(item.author.name)} {item.author.profession && `· ${item.author.profession}`}</p>}
                 {googleMapsUrl(item.latitude, item.longitude, item.google_maps_url) && <a href={googleMapsUrl(item.latitude, item.longitude, item.google_maps_url)} target="_blank" rel="noreferrer" className="mt-5 inline-flex rounded-xl border border-[#98754d]/35 px-4 py-2 text-sm font-semibold text-[#49351f] hover:bg-white/50">Open in Google Maps ↗</a>}<MediaGallery item={item} activeImage={activeImage} setActiveImage={setActiveImage} />
                 {(item.people?.length ?? 0) > 0 && <div className="mt-6 border-t border-[#98754d]/25 pt-5"><p className="mb-2 text-[10px] font-bold uppercase tracking-[.22em] text-[#846440]">People connected to this item</p>{item.people.map((person) => <p key={person.name} className="text-sm"><strong>{person.name}</strong> <span className="text-[#80674c]">— {person.position}</span></p>)}</div>}
@@ -94,7 +98,7 @@ function VideoPlayer({ src, title }) {
     return <a href={src} target="_blank" rel="noreferrer" className="flex items-center justify-between rounded-xl border border-[#98754d]/30 bg-white/45 px-4 py-3 text-sm font-semibold text-[#513823] transition hover:bg-white">Watch external video <span aria-hidden="true">↗</span></a>;
 }
 
-function MobileFilters({ onReset, contentFilter, onContentFilter, stateCounts, open, onClose, showNames, onToggleNames, selectedState, onSelectState, categoryOptions, categoryFilter, onCategoryFilter }) {
+function MobileFilters({ onReset, contentFilter, culturalTypeFilter, onCulturalTypeFilter, onContentFilter, stateCounts, open, onClose, showNames, onToggleNames, selectedState, onSelectState, categoryOptions, categoryFilter, onCategoryFilter }) {
     const { dir, locale, t } = useLanguage();
     useEffect(() => {
         if (!open) return undefined;
@@ -109,7 +113,6 @@ function MobileFilters({ onReset, contentFilter, onContentFilter, stateCounts, o
     return <>
         <button type="button" className="fixed inset-0 z-[70] bg-[#21170f]/50 backdrop-blur-sm lg:hidden" onClick={onClose} aria-label="Close filters" />
         <aside className={`mobile-filters fixed inset-y-0 z-[80] flex w-[min(88vw,22rem)] flex-col overflow-y-auto ${dir === 'rtl' ? 'left-0 border-r shadow-[12px_0_30px_rgba(43,29,16,0.25)]' : 'right-0 border-l shadow-[-12px_0_30px_rgba(43,29,16,0.25)]'} bg-[#e7d6cc] text-[#49351F] ${locale === 'ar' ? 'filter-arabic' : ''} lg:hidden`} role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
-            <FilterTop />
             <div className="p-5">
             <div className="border-b border-[#98754d]/25 pb-5">
                 <div className="flex items-center justify-between">
@@ -119,13 +122,13 @@ function MobileFilters({ onReset, contentFilter, onContentFilter, stateCounts, o
                 <p className="mt-1 text-xs leading-5 text-[#80674c]">{t('exploreSubtitle')}</p>
                 <div className="filter-narrow-ornament mt-4" aria-hidden="true" />
             </div>
-            <MapFilters onReset={onReset} contentFilter={contentFilter} onContentFilter={onContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={onCategoryFilter} selectedState={selectedState} onSelectState={onSelectState} stateCounts={stateCounts} showNames={showNames} onToggleNames={onToggleNames} />
+            <MapFilters onReset={onReset} contentFilter={contentFilter} culturalTypeFilter={culturalTypeFilter} onCulturalTypeFilter={onCulturalTypeFilter} onContentFilter={onContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={onCategoryFilter} selectedState={selectedState} onSelectState={onSelectState} stateCounts={stateCounts} showNames={showNames} onToggleNames={onToggleNames} />
             </div>
         </aside>
     </>;
 }
 
-export default function Home({ storedItems = [], storedEvents = [], storedCategories = [] }) {
+export default function Home({ storedItems = [], storedEvents = [], storedSites = [], storedCrafts = [], storedCategories = [] }) {
     const { locale, t } = useLanguage();
     const [today, setToday] = useState(() => tunisiaToday());
     useEffect(() => {
@@ -138,11 +141,14 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
     const [filtersOpen, setFiltersOpen] = useState(false);
     const [showNames, setShowNames] = useState(true);
     const [selectedState, setSelectedState] = useState('');
-    const [contentFilter, setContentFilter] = useState('all');
+    const [contentFilter, setContentFilter] = useState('events');
+    const [culturalTypeFilter, setCulturalTypeFilter] = useState('all');
     const filteredItems = useMemo(() => [
-        ...(contentFilter !== 'events' ? storedItems.map(item => ({ ...culturalItemPosition(item), kind: 'cultural' })) : []),
-        ...(contentFilter !== 'cultural' ? storedEvents : []),
-    ], [storedItems, storedEvents, contentFilter]);
+        ...(contentFilter === 'events' ? storedEvents : []),
+        ...(contentFilter === 'cultural' ? storedItems.filter(item => culturalTypeFilter === 'all' || (culturalTypeFilter === 'tangible' ? item.is_tangible : !item.is_tangible)).map(item => ({ ...culturalItemPosition(item), kind: 'cultural' })) : []),
+        ...(contentFilter === 'sites' ? storedSites : []),
+        ...(contentFilter === 'crafts' ? storedCrafts.map(item => ({ ...culturalItemPosition(item), kind: 'cultural', craft: true })) : []),
+    ], [storedItems, storedEvents, storedSites, storedCrafts, contentFilter, culturalTypeFilter]);
     const matchesCategory = useMemo(() => categoryMatcher(storedCategories), [storedCategories]);
     const categoryOptions = useMemo(() => storedCategories
         .filter(category => category.parent_id == null)
@@ -152,12 +158,13 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
     const categoryItems = useMemo(() => filteredItems.filter(item => categoryFilter === null || matchesCategory(item, categoryFilter)), [filteredItems, categoryFilter, matchesCategory]);
     const mapItems = useMemo(() => categoryItems.filter(item => item.kind !== 'cultural'), [categoryItems]);
     const discoveryItems = useMemo(() => categoryItems.filter(item => !selectedState || item.state === selectedState), [categoryItems, selectedState]);
-    const discoveryContent = <DiscoveryContent mode={contentFilter} items={discoveryItems} today={today} onSelectEvent={setSelectedItem} onSelectCulturalItem={setSelectedItem} />;
+    const discoveryContent = <DiscoveryContent mode={contentFilter} items={discoveryItems} today={today} onSelectEvent={setSelectedItem} onSelectCulturalItem={setSelectedItem} onSelectSite={setSelectedItem} />;
     const mapGroups = useMemo(() => groupCategories(storedCategories, filteredItems.filter(item => !selectedState || item.state === selectedState), governoratePositions)
         .filter(group => categoryFilter === null || group.category.id === categoryFilter), [storedCategories, filteredItems, selectedState, categoryFilter]);
     const changeCategoryFilter = id => { setCategoryFilter(id); setSelectedCategory(null); setSelectedItem(null); };
     const resetFilters = () => {
-        setContentFilter('all');
+        setContentFilter('events');
+        setCulturalTypeFilter('all');
         changeCategoryFilter(null);
         setSelectedState('');
         setShowNames(true);
@@ -168,17 +175,15 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
         <Head title={t('mapLabel')} />
         <main className="p-3 sm:p-5 lg:p-6">
             <div className="grid items-start gap-4 lg:grid-cols-[minmax(18rem,1fr)_minmax(0,2fr)] lg:gap-6">
-                <aside dir={locale === 'ar' ? 'ltr' : 'rtl'} className="hidden min-w-0 lg:block">
-                    <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`filter-panel ${locale === 'ar' ? 'filter-arabic' : ''}`}>
-                    <FilterTop />
+                <aside dir={locale === 'ar' ? 'ltr' : 'rtl'} className="hidden min-w-0 self-start lg:block">
+                    <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`filter-panel lg:fixed ${locale === 'ar' ? 'right-6' : 'left-6'} lg:top-42 lg:z-30 lg:max-h-[calc(100vh-3rem)] lg:w-[calc((100vw-4.5rem)/3)] lg:overflow-y-auto ${locale === 'ar' ? 'filter-arabic' : ''}`}>
                     <div className="p-6">
                     <div className="border-b border-[#98754d]/30 pb-5">
-                        <h1 className={`mt-2 text-3xl font-bold text-[#18293b] ${locale === 'ar' ? 'font-arabic-title' : 'font-serif'}`}>{t('exploreTunisia')}</h1>
-                        <p className="mt-2 max-w-sm text-sm leading-6 text-[#43556b]">{t('exploreSubtitle')}</p>
+                        <h1 className={`mt-2 text-3xl lg:text-4xl font-semibold text-[#4a2e1e] ${locale === 'ar' ? 'font-arabic-title' : 'font-serif'}`}>{t('exploreTunisia')}</h1>
+                        <p className="mt-2 text-lg lg:text-xl leading-6 text-[#18293b]">{t('exploreSubtitle')}</p>
                         <div className="filter-narrow-ornament" aria-hidden="true" />
                     </div>
-                    <MapFilters onReset={resetFilters} contentFilter={contentFilter} onContentFilter={setContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={changeCategoryFilter} selectedState={selectedState} onSelectState={setSelectedState} stateCounts={stateCounts} showNames={showNames} onToggleNames={(event) => setShowNames(event.target.checked)} />
-                    {discoveryContent}
+                    <MapFilters onReset={resetFilters} contentFilter={contentFilter} culturalTypeFilter={culturalTypeFilter} onCulturalTypeFilter={setCulturalTypeFilter} onContentFilter={setContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={changeCategoryFilter} selectedState={selectedState} onSelectState={setSelectedState} stateCounts={stateCounts} showNames={showNames} onToggleNames={(event) => setShowNames(event.target.checked)} />
                     </div>
                     </div>
                 </aside>
@@ -195,7 +200,7 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
                         <span className="map-border map-border-bottom" aria-hidden="true" />
                         <span className="map-border map-border-left" aria-hidden="true" />
                         <div className="map-paper-content">
-                            <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={mapItems} onSelectItem={setSelectedItem} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
+                            <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={mapItems} onSelectItem={setSelectedItem} onSelectState={setSelectedState} onResetMap={resetFilters} hasActiveFilter={Boolean(selectedState || categoryFilter !== null || contentFilter !== 'all' || selectedCategory !== null)} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
                         </div>
                     </div>
                     <img src="/storage/images/evergreen-tree.svg" alt="" aria-hidden="true" className="map-evergreen-frame" />
@@ -204,19 +209,21 @@ export default function Home({ storedItems = [], storedEvents = [], storedCatego
                     <img src="/images/bottom-left-leaf.png" alt="" aria-hidden="true" draggable={false} className="pointer-events-none absolute -bottom-2 -left-2 z-10 h-auto w-28 max-w-[30%] select-none sm:-bottom-8 sm:-left-8 sm:w-40" /> */}
                 </section>
             </div>
+            <div className={`hidden lg:block ${locale === 'ar' ? 'desktop-discovery-column-ar' : 'desktop-discovery-column '}`}>{discoveryContent}</div>
             <div className="px-2 lg:hidden">{discoveryContent}</div>
         </main>
-        <MobileFilters onReset={resetFilters} contentFilter={contentFilter} onContentFilter={setContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={changeCategoryFilter} stateCounts={stateCounts} open={filtersOpen} onClose={() => setFiltersOpen(false)} showNames={showNames} onToggleNames={(event) => setShowNames(event.target.checked)} selectedState={selectedState} onSelectState={setSelectedState} />
+        <MobileFilters onReset={resetFilters} contentFilter={contentFilter} culturalTypeFilter={culturalTypeFilter} onCulturalTypeFilter={setCulturalTypeFilter} onContentFilter={setContentFilter} categoryOptions={categoryOptions} categoryFilter={categoryFilter} onCategoryFilter={changeCategoryFilter} stateCounts={stateCounts} open={filtersOpen} onClose={() => setFiltersOpen(false)} showNames={showNames} onToggleNames={(event) => setShowNames(event.target.checked)} selectedState={selectedState} onSelectState={setSelectedState} />
         {activeGroup && <CategoryDrawer key={activeGroup.key} group={activeGroup} onClose={() => setSelectedCategory(null)} />}
         {selectedItem?.kind === 'cultural' && <CulturalItemDrawer key={`cultural-${selectedItem.id}`} item={selectedItem} onClose={() => setSelectedItem(null)} />}
         {selectedItem?.kind === 'event' && <EventDrawer key={`event-${selectedItem.id}`} item={selectedItem} onClose={() => setSelectedItem(null)} />}
+        {selectedItem?.kind === 'site' && <SiteDrawer key={`site-${selectedItem.id}`} item={selectedItem} onClose={() => setSelectedItem(null)} />}
     </ClientLayout>;
 }
 
-function MapFilters({ onReset, contentFilter, onContentFilter, categoryOptions, categoryFilter, onCategoryFilter, selectedState, onSelectState, stateCounts, showNames, onToggleNames }) {
+function MapFilters({ onReset, contentFilter, culturalTypeFilter, onCulturalTypeFilter, onContentFilter, categoryOptions, categoryFilter, onCategoryFilter, selectedState, onSelectState, stateCounts, showNames, onToggleNames }) {
     const { t } = useLanguage();
     return <section className="mt-6" aria-label="Map filters">
-        <ContentFilter value={contentFilter} onChange={onContentFilter} />
+        <ContentFilter value={contentFilter} culturalTypeFilter={culturalTypeFilter} onCulturalTypeFilter={onCulturalTypeFilter} onChange={onContentFilter} />
         <CategoryFilters options={categoryOptions} value={categoryFilter} onChange={onCategoryFilter} />
         <GovernorateSelect value={selectedState} onChange={onSelectState} governorates={governorates} counts={stateCounts} />
         <label className="mt-5 flex cursor-pointer items-center gap-3 text-sm font-semibold">
@@ -235,8 +242,9 @@ function MapKey({ options }) {
     const { t, locale } = useLanguage();
     return <div className="map-key mt-6 border-t border-[#98754d]/25 pt-5" aria-label="Map key">
         <div className="flex flex-wrap gap-3 text-xs text-[#80674c]">
+            <span className="inline-flex items-center gap-4"><span className="map-key-event" />{t('events')}</span>
             <span className="inline-flex items-center gap-2"><span className="map-key-cultural"><span aria-hidden="true">✦</span></span>{t('culturalContent')}</span>
-            <span className="inline-flex items-center gap-2"><span className="map-key-event" />{t('events')}</span>
+            <span className="inline-flex items-center gap-2"><span className="map-key-site" />{t('sites')}</span>
         </div>
     </div>;
 }
@@ -246,13 +254,14 @@ function CategoryGlyph({ category, index = 0 }) {
     return category.icon_url ? <img src={category.icon_url} alt="" className="size-5 object-contain" /> : <ItemIcon type={types[index % types.length]} className="size-4" />;
 }
 
-function ContentFilter({ value, onChange }) {
+function ContentFilter({ value, culturalTypeFilter, onCulturalTypeFilter, onChange }) {
     const { t } = useLanguage();
-    return <fieldset><legend className="sr-only">{t('mapLabel')}</legend><div className="content-filter-tabs">{[['all', t('all')], ['cultural', t('culturalContent')], ['events', t('events')]].map(([key, label]) => <button key={key} type="button" aria-pressed={value === key} onClick={() => onChange(key)} className={`content-filter-tab ${value === key ? 'is-active' : ''}`}>{label}</button>)}</div></fieldset>;
-}
-
-function FilterTop() {
-    return <div className="filter-top-border" aria-hidden="true" />;
+    return <fieldset><legend className="sr-only">{t('mapLabel')}</legend><div className="content-filter-tabs">
+        {[['events', t('culturalEvents')], ['cultural', t('tangibleHeritage')], ['sites', t('archaeologicalSites')]].map(([key, label]) => <button key={key} type="button" aria-pressed={value === key} onClick={() => onChange(key)} className={`content-filter-tab ${value === key ? 'is-active' : ''}`}>{label}</button>)}
+        <button type="button" aria-pressed={value === 'crafts'} onClick={() => onChange('crafts')} className={`content-filter-tab ${value === 'crafts' ? 'is-active' : ''}`}>{t('mastersOfCrafts')}</button>
+    </div>{value === 'cultural' && <div className="mt-4 flex flex-wrap gap-4 rounded-xl border border-[#98754d]/25 bg-white/30 p-3" role="radiogroup" aria-label={t('heritageType')}>
+        {[['all', t('all')], ['tangible', t('tangibleHeritageOnly')], ['intangible', t('intangibleHeritage')]].map(([key, label]) => <label key={key} className="inline-flex cursor-pointer items-center gap-2 text-sm"><input type="radio" name="cultural-type-filter" value={key} checked={culturalTypeFilter === key} onChange={() => onCulturalTypeFilter(key)} className="border-[#98754d] text-[#747A3C] focus:ring-[#747A3C]" />{label}</label>)}
+    </div>}</fieldset>;
 }
 
 const translated = name => name?.en || name?.fr || name?.ar || '';
@@ -281,6 +290,13 @@ function CulturalItemDrawer({ item, onClose }) {
         </div>
         </Dialog>
     </Transition>;
+}
+
+function SiteDrawer({ item, onClose }) {
+    const { locale, dir } = useLanguage();
+    const [isOpen, setIsOpen] = useState(true);
+    const close = () => setIsOpen(false);
+    return <Transition appear show={isOpen} afterLeave={onClose}><Dialog onClose={close} className="relative z-[80]"><TransitionChild enter="transition-opacity duration-300" enterFrom="opacity-0" enterTo="opacity-100" leave="transition-opacity duration-300" leaveFrom="opacity-100" leaveTo="opacity-0"><div className="fixed inset-0 bg-[#21170f]/40 backdrop-blur-sm" aria-hidden="true" /></TransitionChild><div dir="ltr" className={`fixed inset-0 flex ${dir === 'rtl' ? 'justify-start' : 'justify-end'}`}><TransitionChild enter="transform transition-transform duration-300" enterFrom={dir === 'rtl' ? '-translate-x-full' : 'translate-x-full'} enterTo="translate-x-0" leave="transform transition-transform duration-300" leaveFrom="translate-x-0" leaveTo={dir === 'rtl' ? '-translate-x-full' : 'translate-x-full'}><DialogPanel dir={dir} className={`flex h-full w-full lg:w-1/2 flex-col ${dir === 'rtl' ? 'border-r' : 'border-l'} border-[#d7bc83] bg-[#f7ead0] text-[#49351f] shadow-2xl`}><header className="flex shrink-0 items-center gap-4 border-b border-[#98754d]/25 p-5 sm:p-7"><div className="min-w-0 flex-1"><p className="mb-1 text-xs font-semibold uppercase tracking-wider text-[#80674c]">Site details</p><DialogTitle className={`break-words text-2xl font-bold ${locale === 'ar' ? 'font-arabic-title' : 'font-serif'}`}>{localizedValue(item.name, locale)}</DialogTitle></div><button type="button" onClick={close} aria-label="Close site" className="grid size-11 shrink-0 place-items-center rounded-full border border-[#98754d]/30 text-2xl">×</button></header><div className="min-h-0 flex-1 overflow-y-auto"><CulturalItemDetails item={item} /></div></DialogPanel></TransitionChild></div></Dialog></Transition>;
 }
 
 function EventDrawer({ item, onClose }) {

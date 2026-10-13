@@ -4,12 +4,13 @@ import './bootstrap';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
-import { LanguageProvider } from './i18n';
+import { appNames, LanguageProvider } from './i18n';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+const appName = import.meta.env.VITE_APP_NAME || appNames.en;
+const localizedAppName = () => appNames[document.documentElement.lang] || appName;
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: () => localizedAppName(),
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,

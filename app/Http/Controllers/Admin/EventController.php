@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Event;
 use App\Models\Location;
 use App\Models\Organization;
+use App\Models\Site;
 use App\Support\RichText;
 use App\Support\GoogleMapsCoordinates;
 use Illuminate\Validation\ValidationException;
@@ -53,7 +54,7 @@ class EventController extends Controller
 
     private function form(Request $request, ?Event $event = null)
     {
-        return Inertia::render('Admin/Events/Form', ['item' => $event, 'organizations' => $request->user()->role === 'organizer' ? $request->user()->organizations()->get(['organizations.id', 'organizations.name']) : Organization::all(['id', 'name']), 'categories' => Category::all(['id', 'name', 'color']), 'locations' => Location::all(['id', 'name', 'cities'])]);
+        return Inertia::render('Admin/Events/Form', ['item' => $event, 'organizations' => $request->user()->role === 'organizer' ? $request->user()->organizations()->get(['organizations.id', 'organizations.name']) : Organization::all(['id', 'name']), 'categories' => Category::all(['id', 'name', 'color']), 'locations' => Location::all(['id', 'name', 'cities']), 'sites' => Site::all(['id', 'name'])]);
     }
 
     public function store(Request $request)
@@ -76,6 +77,7 @@ class EventController extends Controller
         $rules = [
             'name' => 'required|array:en,fr,ar', 'name.en' => 'required_without_all:name.fr,name.ar|nullable|string|max:255', 'name.fr' => 'nullable|string|max:255', 'name.ar' => 'nullable|string|max:255',
             'main_image' => [$event->exists ? 'nullable' : 'required', 'image', 'max:10240'], 'organization_id' => 'required|exists:organizations,id',
+            'site_id' => 'nullable|exists:sites,id',
             'category_ids' => 'required|array|min:1', 'category_ids.*' => 'required|integer|distinct|exists:categories,id', 'tags' => 'present|array', 'tags.*' => 'required|string|max:100',
             'event_dates' => 'required|array|min:1', 'event_dates.*.date' => 'required|date_format:Y-m-d', 'event_dates.*.start_at' => 'required|date_format:H:i', 'event_dates.*.end_at' => 'required|date_format:H:i',
             'is_free' => 'required|boolean', 'price' => [Rule::requiredIf(! $request->boolean('is_free')), 'nullable', 'numeric', 'min:0', 'max:9999999999.99'], 'payment_link' => 'nullable|url:http,https|max:2048',

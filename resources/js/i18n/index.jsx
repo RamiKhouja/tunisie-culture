@@ -6,19 +6,25 @@ export const languages = [
     { code: 'en', label: 'English', shortLabel: 'EN', dir: 'ltr' },
 ];
 
+export const appNames = {
+    ar: 'مقامات تونس',
+    fr: 'Maqamat Tunisie',
+    en: 'Maqamat Tunisia',
+};
+
 const messages = {
     ar: {
         maqamatName: 'مقامات تونس', maqamatSubtitle: 'خارطة تونس الثقافية', logIn: 'تسجيل الدخول', loggingIn: 'جارٍ تسجيل الدخول…', rememberMe: 'تذكّرني', forgotPassword: 'هل نسيت كلمة المرور؟', notMemberYet: 'لست عضوًا بعد؟ أنشئ حسابًا',
         home: 'الرئيسية', destinations: 'الوجهات', experiences: 'التجارب', about: 'عن مقامات تونس',
-        exploreTunisia: 'اكتشف تونس', exploreSubtitle: 'اكتشف الموروث الثقافي والفعاليات في جميع الولايات التونسية.',
+        exploreTunisia: 'اكتشف تونس', exploreSubtitle: 'موروثها وحاضرها ومستقبلها الثقافي',
         signIn: 'تسجيل الدخول', dashboard: 'لوحة التحكم', menu: 'القائمة', language: 'اللغة',
         culturalDiscoveries: 'اكتشافات ثقافية', upcomingEvents: 'فعاليات قادمة', discoverCollection: 'اكتشف المجموعة',
         culturalDescription: 'أحدث الإضافات إلى تراثنا المشترك.', todayBeyond: 'اليوم وما بعده',
         calendarDescription: 'تقويمك الثقافي حسب توقيت تونس.', explore: 'استكشف', filters: 'المعايير',
         governorate: 'الولاية', allTunisia: 'كل تونس', showPlacesNames: 'إظهار أسماء الأماكن', resetFilters: 'إعادة ضبط المعايير',
-        all: 'الكل', allCategories: 'كل الفئات', culturalContent: 'الموروث الثقافي', events: 'الفعاليات', upcoming: 'قادم', past: 'منتهٍ', dateTime: 'التاريخ والوقت', eventStatus: 'حالة الفعالية', noCultural: 'لا توجد عناصر ثقافية تطابق هذه المرشحات.',
+        all: 'الكل', allCategories: 'كل الفئات', archaeologicalSites: 'خارطة المواقع الأثرية', tangibleHeritage: 'التراث المادي و اللامادي', tangibleHeritageOnly: 'التراث المادي', intangibleHeritage: 'التراث اللامادي', heritageType: 'نوع التراث', culturalEvents: 'الفعاليات الثقافية والفنية', mastersOfCrafts: 'أهل الصنائع', culturalContent: 'الموروث الثقافي', events: 'الفعاليات', sites: 'المواقع', upcoming: 'قادم', past: 'منتهٍ', dateTime: 'التاريخ والوقت', eventStatus: 'حالة الفعالية', noCultural: 'لا توجد عناصر ثقافية تطابق هذه المرشحات.', noSites: 'لا توجد مواقع تطابق هذه المرشحات.',
         noEvents: 'لا توجد فعاليات قادمة تطابق هذه المرشحات.', tryAnother: 'جرّب فئة أو ولاية أخرى.', today: 'اليوم', tomorrow: 'غدًا',
-        freeEntry: 'دخول مجاني', items: 'عناصر', item: 'عنصر', event: 'فعالية',
+        freeEntry: 'دخول مجاني', items: 'عناصر', item: 'عنصر', event: 'فعالية', previous: 'السابق', next: 'التالي', page: 'صفحة',
         mapLabel: 'خريطة تونس الثقافية', close: 'إغلاق', openFilters: 'فتح المعايير', closeFilters: 'إغلاق المعايير',
         createAccount: 'إنشاء حساب', account: 'الحساب', profile: 'الملف الشخصي', organization: 'المنظمة',
         firstName: 'الاسم', lastName: 'اللقب', email: 'البريد الإلكتروني', password: 'كلمة المرور', confirmPassword: 'تأكيد كلمة المرور',
@@ -39,15 +45,15 @@ const messages = {
     fr: {
         maqamatName: 'Maqamat Tunisie', maqamatSubtitle: 'Carte culturelle de la Tunisie', logIn: 'Se connecter', loggingIn: 'Connexion…', rememberMe: 'Se souvenir de moi', forgotPassword: 'Mot de passe oublié ?', notMemberYet: 'Pas encore membre ? Créez un compte',
         home: 'Accueil', destinations: 'Destinations', experiences: 'Expériences', about: 'À propos',
-        exploreTunisia: 'Explorer la Tunisie', exploreSubtitle: 'Découvrez le patrimoine culturel et les événements des 24 gouvernorats.',
+        exploreTunisia: 'Explorer la Tunisie', exploreSubtitle: 'Son patrimoine, son présent et son avenir culturels',
         signIn: 'Se connecter', dashboard: 'Tableau de bord', menu: 'MENU', language: 'Langue',
         culturalDiscoveries: 'Découvertes culturelles', upcomingEvents: 'Événements à venir', discoverCollection: 'Découvrir la collection',
         culturalDescription: 'Les derniers ajouts à notre patrimoine commun.', todayBeyond: "Aujourd'hui et au-delà",
         calendarDescription: 'Votre agenda culturel à l’heure tunisienne.', explore: 'Explorer', filters: 'Critères',
         governorate: 'Gouvernorat', allTunisia: 'Toute la Tunisie', showPlacesNames: 'Afficher les noms des lieux', resetFilters: 'Réinitialiser les filtres',
-        all: 'Tout', allCategories: 'Toutes les catégories', culturalContent: 'Patrimoine culturel', events: 'Événements', upcoming: 'À venir', past: 'Passé', dateTime: 'Date et heure', eventStatus: 'Statut de l’événement', noCultural: 'Aucun élément culturel ne correspond à ces filtres.',
+        all: 'Tout', allCategories: 'Toutes les catégories', archaeologicalSites: 'Carte des sites archéologiques', tangibleHeritage: 'Patrimoine matériel et immatériel', tangibleHeritageOnly: 'Patrimoine matériel', intangibleHeritage: 'Patrimoine immatériel', heritageType: 'Type de patrimoine', culturalEvents: 'Événements culturels et artistiques', mastersOfCrafts: 'Maîtres de l’artisanat', culturalContent: 'Patrimoine culturel', events: 'Événements', sites: 'Sites', upcoming: 'À venir', past: 'Passé', dateTime: 'Date et heure', eventStatus: 'Statut de l’événement', noCultural: 'Aucun élément culturel ne correspond à ces filtres.', noSites: 'Aucun site ne correspond à ces filtres.',
         noEvents: 'Aucun événement à venir ne correspond à ces filtres.', tryAnother: 'Essayez une autre catégorie ou un autre gouvernorat.', today: "Aujourd'hui", tomorrow: 'Demain',
-        freeEntry: 'Entrée gratuite', items: 'éléments', item: 'élément', event: 'événement',
+        freeEntry: 'Entrée gratuite', items: 'éléments', item: 'élément', event: 'événement', previous: 'Précédent', next: 'Suivant', page: 'Page',
         mapLabel: 'Carte culturelle de la Tunisie', close: 'Fermer', openFilters: 'Ouvrir les filtres', closeFilters: 'Fermer les filtres',
         createAccount: 'Créer un compte', account: 'Compte', profile: 'Profil', organization: 'Organisation',
         firstName: 'Prénom', lastName: 'Nom', email: 'E-mail', password: 'Mot de passe', confirmPassword: 'Confirmer le mot de passe',
@@ -62,15 +68,15 @@ const messages = {
     en: {
         maqamatName: 'Maqamat Tunisia', maqamatSubtitle: 'Cultural Map of Tunisia', logIn: 'Log in', loggingIn: 'Logging in…', rememberMe: 'Remember me', forgotPassword: 'Forgot your password?', notMemberYet: 'Not a member yet? Create an account',
         home: 'Home', destinations: 'Destinations', experiences: 'Experiences', about: 'About Maqamat Tunisia',
-        exploreTunisia: 'Explore Tunisia', exploreSubtitle: 'Discover cultural heritage and events across all 24 governorates.',
+        exploreTunisia: 'Explore Tunisia', exploreSubtitle: 'Its cultural heritage, present and future',
         signIn: 'Sign in', dashboard: 'Dashboard', menu: 'MENU', language: 'Language',
         culturalDiscoveries: 'Cultural discoveries', upcomingEvents: 'Upcoming events', discoverCollection: 'Discover the collection',
         culturalDescription: 'The latest additions to our shared heritage.', todayBeyond: 'Today & beyond',
         calendarDescription: 'Your cultural calendar, in Tunisia time.', explore: 'Explore', filters: 'Criteria',
         governorate: 'Governorate', allTunisia: 'All Tunisia', showPlacesNames: 'Show places names', resetFilters: 'Reset filters',
-        all: 'All', allCategories: 'All categories', culturalContent: 'Cultural Heritage', events: 'Events', upcoming: 'Upcoming', past: 'Past', dateTime: 'Date & time', eventStatus: 'Event status', noCultural: 'No cultural items match these filters.',
+        all: 'All', allCategories: 'All categories', archaeologicalSites: 'Archaeological Sites Map', tangibleHeritage: 'Tangible & Intangible Heritage', tangibleHeritageOnly: 'Tangible heritage', intangibleHeritage: 'Intangible heritage', heritageType: 'Heritage type', culturalEvents: 'Cultural & Artistic Events', mastersOfCrafts: 'Masters of Crafts', culturalContent: 'Cultural Heritage', events: 'Events', sites: 'Sites', upcoming: 'Upcoming', past: 'Past', dateTime: 'Date & time', eventStatus: 'Event status', noCultural: 'No cultural items match these filters.', noSites: 'No sites match these filters.',
         noEvents: 'No upcoming events match these filters.', tryAnother: 'Try another category or governorate.', today: 'Today', tomorrow: 'Tomorrow',
-        freeEntry: 'Free entry', items: 'items', item: 'item', event: 'event',
+        freeEntry: 'Free entry', items: 'items', item: 'item', event: 'event', previous: 'Previous', next: 'Next', page: 'Page',
         mapLabel: 'Tunisia cultural map', close: 'Close', openFilters: 'Open filters', closeFilters: 'Close filters',
         createAccount: 'Create your account', account: 'Account', profile: 'Profile', organization: 'Organization',
         firstName: 'First name', lastName: 'Last name', email: 'Email', password: 'Password', confirmPassword: 'Confirm password',
@@ -85,9 +91,9 @@ const messages = {
 };
 
 const adminCreateLabels = {
-    ar: { addNewEvent: 'إضافة فعالية', addNewOrganization: 'إضافة منظمة', addNewCulturalItem: 'إضافة عنصر ثقافي', addNewUser: 'إضافة مستخدم', addNewState: 'إضافة ولاية', addNewCategory: 'إضافة فئة', addNewType: 'إضافة نوع', addNewArtist: 'إضافة فنان أو شخص' },
-    fr: { addNewEvent: 'Ajouter un événement', addNewOrganization: 'Ajouter une organisation', addNewCulturalItem: 'Ajouter un élément culturel', addNewUser: 'Ajouter un utilisateur', addNewState: 'Ajouter un gouvernorat', addNewCategory: 'Ajouter une catégorie', addNewType: 'Ajouter un type', addNewArtist: 'Ajouter un artiste ou une personne' },
-    en: { addNewEvent: 'Add event', addNewOrganization: 'Add organization', addNewCulturalItem: 'Add cultural item', addNewUser: 'Add user', addNewState: 'Add state', addNewCategory: 'Add category', addNewType: 'Add type', addNewArtist: 'Add artist or person' },
+    ar: { addNewEvent: 'إضافة فعالية', addNewOrganization: 'إضافة منظمة', addNewCulturalItem: 'إضافة عنصر ثقافي', addNewUser: 'إضافة مستخدم', addNewState: 'إضافة ولاية', addNewCategory: 'إضافة فئة', addNewType: 'إضافة نوع', addNewArtist: 'إضافة فنان أو شخص', heritageType: 'نوع التراث', tangibleHeritageOnly: 'التراث المادي', intangibleHeritage: 'التراث اللامادي', crafts: 'الحرف', addNewCraft: 'إضافة حرفة', craftEditor: 'محرر الحرف', newCraft: 'حرفة جديدة', editCraft: 'تعديل حرفة', owner: 'صاحب الحرفة', craftDescription: 'الحرف والصناعات التقليدية', products: 'المنتجات', addProduct: 'إضافة منتج', productName: 'اسم المنتج', productPrice: 'السعر بالدينار التونسي' },
+    fr: { addNewEvent: 'Ajouter un événement', addNewOrganization: 'Ajouter une organisation', addNewCulturalItem: 'Ajouter un élément culturel', addNewUser: 'Ajouter un utilisateur', addNewState: 'Ajouter un gouvernorat', addNewCategory: 'Ajouter une catégorie', addNewType: 'Ajouter un type', addNewArtist: 'Ajouter un artiste ou une personne', heritageType: 'Type de patrimoine', tangibleHeritageOnly: 'Patrimoine matériel', intangibleHeritage: 'Patrimoine immatériel', crafts: 'Métiers d’art', addNewCraft: 'Ajouter un métier d’art', craftEditor: 'Éditeur des métiers d’art', newCraft: 'Nouveau métier d’art', editCraft: 'Modifier le métier d’art', owner: 'Propriétaire', craftDescription: 'Métiers et artisanat traditionnel', products: 'Produits', addProduct: 'Ajouter un produit', productName: 'Nom du produit', productPrice: 'Prix en TND' },
+    en: { addNewEvent: 'Add event', addNewOrganization: 'Add organization', addNewCulturalItem: 'Add cultural item', addNewUser: 'Add user', addNewState: 'Add state', addNewCategory: 'Add category', addNewType: 'Add type', addNewArtist: 'Add artist or person', heritageType: 'Heritage type', tangibleHeritageOnly: 'Tangible heritage', intangibleHeritage: 'Intangible heritage', crafts: 'Crafts', addNewCraft: 'Add craft', craftEditor: 'Craft editor', newCraft: 'New craft', editCraft: 'Edit craft', owner: 'Owner', craftDescription: 'Crafts and traditional arts', products: 'Products', addProduct: 'Add product', productName: 'Product name', productPrice: 'Price in TND' },
 };
 
 const LanguageContext = createContext(null);
@@ -99,6 +105,7 @@ export function LanguageProvider({ children }) {
         window.localStorage.setItem('athar-locale', language.code);
         document.documentElement.lang = language.code;
         document.documentElement.dir = language.dir;
+        document.title = appNames[language.code];
     }, [language]);
     const value = useMemo(() => ({ locale: language.code, dir: language.dir, language, languages, setLocale, t: (key) => adminCreateLabels[language.code]?.[key] || messages[language.code][key] || messages.en[key] || key }), [language]);
     return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;

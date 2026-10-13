@@ -89,6 +89,17 @@ class CulturalCatalogSeeder extends Seeder
             $categories[$child]->update(['parent_id' => $categories['intangible-heritage']->id]);
         }
 
+        $food = Category::find(11) ?: Category::where('url', 'food')->first();
+        if (! $food) {
+            $food = new Category(['id' => 11]);
+        }
+        $food->fill([
+            'name' => $this->translation(['Food heritage', 'Patrimoine culinaire', 'التراث الغذائي']),
+            'url' => 'food',
+            'description' => $this->translation(['Traditional foods, recipes and culinary know-how.', 'Aliments, recettes et savoir-faire culinaires traditionnels.', 'الأطعمة والوصفات والمعارف التقليدية في الطبخ.']),
+        ])->save();
+        $categories['food'] = $food;
+
         return $categories;
     }
 

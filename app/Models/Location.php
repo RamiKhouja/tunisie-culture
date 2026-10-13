@@ -15,4 +15,14 @@ class Location extends Model
     {
         return $this->hasMany(CulturalItem::class);
     }
+
+    public function sites(): HasMany
+    {
+        return $this->hasMany(Site::class);
+    }
+
+    public function crafts(): HasMany
+    {
+        return $this->hasMany(Craft::class);
+    }
 }

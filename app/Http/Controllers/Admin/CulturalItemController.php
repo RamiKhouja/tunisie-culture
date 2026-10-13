@@ -78,7 +78,7 @@ class CulturalItemController extends Controller
             'google_maps_url' => 'nullable|url|max:2048', 'latitude' => 'required_without:google_maps_url|nullable|numeric|between:-90,90', 'longitude' => 'required_without:google_maps_url|nullable|numeric|between:-180,180',
             'category_ids' => 'required|array|min:1', 'category_ids.*' => 'exists:categories,id', 'type_ids' => 'nullable|array', 'type_ids.*' => 'exists:types,id',
             'author_id' => 'nullable|exists:artists,id', 'people' => 'nullable|array', 'people.*.name' => 'required_with:people|max:255', 'people.*.position' => 'nullable|max:255',
-            'location_id' => 'nullable|exists:locations,id', 'city' => 'nullable|max:255', 'is_active' => 'boolean', 'release' => 'nullable|max:100', 'importance' => ['required', Rule::in(['high', 'medium', 'low'])],
+            'location_id' => 'nullable|exists:locations,id', 'city' => 'nullable|max:255', 'is_active' => 'boolean', 'is_tangible' => 'boolean', 'release' => 'nullable|max:100', 'importance' => ['required', Rule::in(['high', 'medium', 'low'])],
         ]);
         if ($request->filled('google_maps_url')) {
             $coordinates = GoogleMapsCoordinates::extract($request->input('google_maps_url'));
@@ -98,6 +98,7 @@ class CulturalItemController extends Controller
         $data['videos'] = array_values(array_unique([...($item?->videos ?? []), ...$uploadedVideos, ...array_filter($request->input('video_urls', []))]));
         $data['people'] = array_values(array_filter($request->input('people', []), fn ($person) => filled(Arr::get($person, 'name'))));
         $data['is_active'] = $request->boolean('is_active');
+        $data['is_tangible'] = $request->has('is_tangible') ? $request->boolean('is_tangible') : true;
 
         return Arr::except($data, ['category_ids', 'type_ids', 'video_files', 'video_urls', 'audio_files']);
     }
