@@ -200,7 +200,7 @@
 .content-filter-tab:hover {
     background: #ad502846;
     color: #18293b;
-    font-weight: 700;
+    font-weight: 500;
 }
 .content-filter-tab.is-active {
     background: #ad4f28;

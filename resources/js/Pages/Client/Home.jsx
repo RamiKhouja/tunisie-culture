@@ -100,19 +100,37 @@ function VideoPlayer({ src, title }) {
 
 function MobileFilters({ onReset, contentFilter, culturalTypeFilter, onCulturalTypeFilter, onContentFilter, stateCounts, open, onClose, showNames, onToggleNames, selectedState, onSelectState, categoryOptions, categoryFilter, onCategoryFilter }) {
     const { dir, locale, t } = useLanguage();
+    const [rendered, setRendered] = useState(open);
+    const [visible, setVisible] = useState(false);
+    useEffect(() => {
+        let enterTimer;
+        let exitTimer;
+        if (open) {
+            setRendered(true);
+            enterTimer = window.setTimeout(() => setVisible(true), 20);
+            document.body.style.overflow = 'hidden';
+        } else {
+            setVisible(false);
+            exitTimer = window.setTimeout(() => setRendered(false), 300);
+            document.body.style.overflow = '';
+        }
+        return () => {
+            if (enterTimer) window.clearTimeout(enterTimer);
+            if (exitTimer) window.clearTimeout(exitTimer);
+        };
+    }, [open]);
     useEffect(() => {
         if (!open) return undefined;
         const closeOnEscape = (event) => event.key === 'Escape' && onClose();
         window.addEventListener('keydown', closeOnEscape);
-        document.body.style.overflow = 'hidden';
-        return () => { window.removeEventListener('keydown', closeOnEscape); document.body.style.overflow = ''; };
+        return () => window.removeEventListener('keydown', closeOnEscape);
     }, [open, onClose]);
 
-    if (!open) return null;
+    if (!rendered) return null;
 
     return <>
-        <button type="button" className="fixed inset-0 z-[70] bg-[#21170f]/50 backdrop-blur-sm lg:hidden" onClick={onClose} aria-label="Close filters" />
-        <aside className={`mobile-filters fixed inset-y-0 z-[80] flex w-[min(88vw,22rem)] flex-col overflow-y-auto ${dir === 'rtl' ? 'left-0 border-r shadow-[12px_0_30px_rgba(43,29,16,0.25)]' : 'right-0 border-l shadow-[-12px_0_30px_rgba(43,29,16,0.25)]'} bg-[#e7d6cc] text-[#49351F] ${locale === 'ar' ? 'filter-arabic' : ''} lg:hidden`} role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
+        <button type="button" className={`fixed inset-0 z-[70] bg-[#21170f]/50 backdrop-blur-sm transition-opacity duration-300 motion-reduce:transition-none lg:hidden ${visible ? 'opacity-100' : 'opacity-0'}`} onClick={onClose} aria-label="Close filters" />
+        <aside className={`mobile-filters fixed inset-y-0 z-[80] flex w-[min(88vw,22rem)] flex-col overflow-y-auto transition-transform duration-300 ease-out motion-reduce:transition-none ${dir === 'rtl' ? 'left-0 border-r shadow-[12px_0_30px_rgba(43,29,16,0.25)]' : 'right-0 border-l shadow-[-12px_0_30px_rgba(43,29,16,0.25)]'} ${visible ? 'translate-x-0' : dir === 'rtl' ? '-translate-x-full' : 'translate-x-full'} bg-[#e7d6cc] text-[#49351F] ${locale === 'ar' ? 'filter-arabic' : ''} lg:hidden`} role="dialog" aria-modal="true" aria-labelledby="mobile-filters-title">
             <div className="p-5">
             <div className="border-b border-[#98754d]/25 pb-5">
                 <div className="flex items-center justify-between">
@@ -163,7 +181,6 @@ export default function Home({ storedItems = [], storedEvents = [], storedSites 
         .filter(group => categoryFilter === null || group.category.id === categoryFilter), [storedCategories, filteredItems, selectedState, categoryFilter]);
     const changeCategoryFilter = id => { setCategoryFilter(id); setSelectedCategory(null); setSelectedItem(null); };
     const resetFilters = () => {
-        setContentFilter('events');
         setCulturalTypeFilter('all');
         changeCategoryFilter(null);
         setSelectedState('');
@@ -187,11 +204,16 @@ export default function Home({ storedItems = [], storedEvents = [], storedSites 
                     </div>
                     </div>
                 </aside>
-                <div dir="ltr" className="mb-2 flex justify-end lg:hidden">
-                    <button dir={locale === 'ar' ? 'rtl' : 'ltr'} type="button" onClick={() => setFiltersOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-[#49351F]/20 bg-[#f7ead0]/95 px-3 py-2 text-sm font-semibold text-[#49351F] shadow-md transition hover:bg-white" aria-label={t('openFilters')}>
-                        <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
-                        <span>{t('filters')}</span>
-                    </button>
+                <div dir="ltr" className="my-2 lg:hidden">
+                    <div className="flex justify-end">
+                        <button dir={locale === 'ar' ? 'rtl' : 'ltr'} type="button" onClick={() => setFiltersOpen(true)} className="inline-flex items-center gap-2 rounded-xl border border-[#49351F]/20 bg-[#f7ead0]/95 px-3 py-2 text-sm font-semibold text-[#49351F] shadow-md transition hover:bg-white" aria-label={t('openFilters')}>
+                            <svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" /></svg>
+                            <span>{t('filters')}</span>
+                        </button>
+                    </div>
+                    <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`${locale === 'ar' ? 'filter-arabic' : ''}`}>
+                        <ContentFilter value={contentFilter} culturalTypeFilter={culturalTypeFilter} onCulturalTypeFilter={setCulturalTypeFilter} onChange={setContentFilter} showCulturalTypeFilter={false} />
+                    </div>
                 </div>
                 <section className="cultural-map relative h-[46rem] min-w-0 sm:h-[56rem] lg:h-[72rem]" aria-label={t('mapLabel')}>
                     <div className="map-paper-edge relative h-full overflow-hidden bg-[#d9e5df]">
@@ -200,7 +222,7 @@ export default function Home({ storedItems = [], storedEvents = [], storedSites 
                         <span className="map-border map-border-bottom" aria-hidden="true" />
                         <span className="map-border map-border-left" aria-hidden="true" />
                         <div className="map-paper-content">
-                            <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={mapItems} onSelectItem={setSelectedItem} onSelectState={setSelectedState} onResetMap={resetFilters} hasActiveFilter={Boolean(selectedState || categoryFilter !== null || contentFilter !== 'all' || selectedCategory !== null)} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
+                            <TunisiaMap categoryGroups={mapGroups} onSelectCategory={setSelectedCategory} items={mapItems} onSelectItem={setSelectedItem} onSelectState={setSelectedState} onResetMap={resetFilters} hasActiveFilter={Boolean(selectedState || categoryFilter !== null || culturalTypeFilter !== 'all')} showNames={showNames} showPlacesNames={showNames} mapMode="vector" selectedState={selectedState} />
                         </div>
                     </div>
                     <img src="/storage/images/evergreen-tree.svg" alt="" aria-hidden="true" className="map-evergreen-frame" />
@@ -254,12 +276,12 @@ function CategoryGlyph({ category, index = 0 }) {
     return category.icon_url ? <img src={category.icon_url} alt="" className="size-5 object-contain" /> : <ItemIcon type={types[index % types.length]} className="size-4" />;
 }
 
-function ContentFilter({ value, culturalTypeFilter, onCulturalTypeFilter, onChange }) {
+function ContentFilter({ value, culturalTypeFilter, onCulturalTypeFilter, onChange, showCulturalTypeFilter = true }) {
     const { t } = useLanguage();
     return <fieldset><legend className="sr-only">{t('mapLabel')}</legend><div className="content-filter-tabs">
         {[['events', t('culturalEvents')], ['cultural', t('tangibleHeritage')], ['sites', t('archaeologicalSites')]].map(([key, label]) => <button key={key} type="button" aria-pressed={value === key} onClick={() => onChange(key)} className={`content-filter-tab ${value === key ? 'is-active' : ''}`}>{label}</button>)}
         <button type="button" aria-pressed={value === 'crafts'} onClick={() => onChange('crafts')} className={`content-filter-tab ${value === 'crafts' ? 'is-active' : ''}`}>{t('mastersOfCrafts')}</button>
-    </div>{value === 'cultural' && <div className="mt-4 flex flex-wrap gap-4 rounded-xl border border-[#98754d]/25 bg-white/30 p-3" role="radiogroup" aria-label={t('heritageType')}>
+    </div>{showCulturalTypeFilter && value === 'cultural' && <div className="mt-4 flex flex-wrap gap-4 rounded-xl border border-[#98754d]/25 bg-white/30 p-3" role="radiogroup" aria-label={t('heritageType')}>
         {[['all', t('all')], ['tangible', t('tangibleHeritageOnly')], ['intangible', t('intangibleHeritage')]].map(([key, label]) => <label key={key} className="inline-flex cursor-pointer items-center gap-2 text-sm"><input type="radio" name="cultural-type-filter" value={key} checked={culturalTypeFilter === key} onChange={() => onCulturalTypeFilter(key)} className="border-[#98754d] text-[#747A3C] focus:ring-[#747A3C]" />{label}</label>)}
     </div>}</fieldset>;
 }
