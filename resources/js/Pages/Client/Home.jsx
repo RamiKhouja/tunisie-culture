@@ -211,7 +211,7 @@ export default function Home({ storedItems = [], storedEvents = [], storedSites 
                             <span>{t('filters')}</span>
                         </button>
                     </div>
-                    <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`${locale === 'ar' ? 'filter-arabic' : ''}`}>
+                    <div dir={locale === 'ar' ? 'rtl' : 'ltr'} className={`mobile-content-filter ${locale === 'ar' ? 'filter-arabic' : ''}`}>
                         <ContentFilter value={contentFilter} culturalTypeFilter={culturalTypeFilter} onCulturalTypeFilter={setCulturalTypeFilter} onChange={setContentFilter} showCulturalTypeFilter={false} />
                     </div>
                 </div>
